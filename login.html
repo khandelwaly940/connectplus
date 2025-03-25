@@ -1,4 +1,3 @@
-<!LOGINANDREGISTRATION html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -10,7 +9,6 @@
     <link rel="stylesheet" href="style.css" />
     <title>Connect+ Login</title>
   </head>
-
   <body>
     <div class="container" id="container">
       <div class="logo-container">
@@ -28,10 +26,10 @@
       </div>
       
       <div class="form-container sign-in">
-        <form action="dashboard.html" method="get">
+        <form id="loginForm">
           <h1>Sign In</h1>
-          <input type="email" placeholder="Email" />
-          <input type="password" placeholder="Password" />
+          <input type="text" id="username" placeholder="Username" required />
+          <input type="password" id="password" placeholder="Password" required />
           <a href="#">Forgot Password?</a>
           <button type="submit">Sign In</button>
         </form>
@@ -53,10 +51,22 @@
       </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+      document.getElementById("loginForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        var username = document.getElementById("username").value;
+        var password = document.getElementById("password").value;
+
+        if (username === "admin" && password === "plusco") {
+          window.location.href = "dashboard.html";
+        } else {
+          alert("Invalid username or password!");
+        }
+      });
+    </script>
   </body>
   <footer>
     <br>
-    <p >© 2025 Connect+. All rights reserved.</p>
-</footer>
+    <p>© 2025 Connect+. All rights reserved.</p>
+  </footer>
 </html>
