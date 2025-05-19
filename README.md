@@ -1,4 +1,4 @@
-# [ConnectPlus](https://khandelwaly940.github.io/connectplus/)
+# [Connect+](https://khandelwaly940.github.io/connectplus/)
 
 A modern learning platform with a Django backend and React frontend.
 
