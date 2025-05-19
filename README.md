@@ -56,8 +56,8 @@ npm start
 
 ## 🌐 Deployment
 
-- **Frontend:** Hosted on GitHub Pages ([link](https://khandelwaly940.github.io/connectplus/))
-- **Backend:** Hosted on Render ([link](https://your-backend.onrender.com))
+- Hosted on GitHub Pages and render([link](https://khandelwaly940.github.io/connectplus/))
+
 
 ---
 
