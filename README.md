@@ -1,58 +1,93 @@
-# Connect+
+# [ConnectPlus](https://khandelwaly940.github.io/connectplus/)
 
-A personalized roadmap generation web application that helps users create custom learning paths based on their time, skill level, and preferences.
+A modern learning platform with a Django backend and React frontend.
 
-## Tech Stack
-- Backend: Django REST Framework
-- Frontend: React
-- Database: PostgreSQL
-- Styling: Tailwind CSS
+---
 
-## Setup Instructions
+## 🚀 Features
 
-### Backend Setup
-1. Create a virtual environment:
-```bash
+- User registration and login
+- Personalized learning roadmaps
+- Weekly progress tracking
+- Dashboard with stats
+- Profile and settings pages
+- ...and more!
+
+---
+
+## 🛠️ Tech Stack
+
+- **Backend:** Django, Django REST Framework, PostgreSQL
+- **Frontend:** React, Material-UI
+
+---
+
+## ⚡ Getting Started
+
+### 1. Clone the repository
+
+```sh
+git clone https://github.com/yourusername/connectplus.git
+cd connectplus
+```
+
+### 2. Backend Setup
+
+```sh
+cd backend
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-2. Install dependencies:
-```bash
 pip install -r requirements.txt
-```
-
-3. Set up PostgreSQL database and update settings.py with your database credentials
-
-4. Run migrations:
-```bash
+# Set up your .env file (see .env.example)
 python manage.py migrate
-```
-
-5. Start the development server:
-```bash
 python manage.py runserver
 ```
 
-### Frontend Setup
-1. Navigate to the frontend directory:
-```bash
-cd frontend
-```
+### 3. Frontend Setup
 
-2. Install dependencies:
-```bash
+```sh
+cd ../frontend
 npm install
-```
-
-3. Start the development server:
-```bash
+# Set up your .env file (see .env.example)
 npm start
 ```
 
-## Features
-- User authentication
-- Personalized roadmap generation
-- Customizable learning paths
-- Progress tracking
-- Resource recommendations 
+---
+
+## 🌐 Deployment
+
+- **Frontend:** Hosted on GitHub Pages ([link](https://khandelwaly940.github.io/connectplus/))
+- **Backend:** Hosted on Render ([link](https://your-backend.onrender.com))
+
+---
+
+## 📄 Documentation
+
+- [Features](#features)
+- [Getting Started](#getting-started)
+- [API Endpoints](#api-endpoints)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+
+---
+
+## 🔗 API Endpoints
+
+| Endpoint                | Method | Description                |
+|-------------------------|--------|----------------------------|
+| `/api/register/`        | POST   | Register a new user        |
+| `/api/token-auth/`      | POST   | Obtain auth token (login)  |
+| `/api/roadmaps/`        | GET    | List user roadmaps         |
+| ...                     | ...    | ...                        |
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
+
+---
+
+## 📧 License
+
+[MIT](LICENSE) 
