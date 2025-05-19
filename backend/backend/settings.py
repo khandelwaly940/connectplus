@@ -137,6 +137,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True  # Only for development
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "https://khandelwaly940.github.io",
+    "https://khandelwaly940.github.io/connectplus",
 ]
 
 # REST Framework settings
