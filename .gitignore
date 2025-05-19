@@ -21,4 +21,8 @@ dist/
 Thumbs.db
 
 # VSCode
-.vscode/ 
+.vscode/
+
+# Project-specific files
+references.txt
+gridbug.txt 
