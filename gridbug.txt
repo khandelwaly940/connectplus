@@ -1,0 +1,47 @@
+0
+
+Based on the MUI v6+ and v7 documentation, you need to update all occurrences of Grid to use the new API. Here are the exact changes needed:
+
+Update imports: From:
+
+import Grid from '@mui/material/Grid';
+
+To:
+
+import Grid from '@mui/material/Grid'; // No change in import, but component API has changed
+Update Grid item props:
+From:
+
+<Grid item xs={12}>
+To:
+
+<Grid size={{ xs: 12 }}>
+Update Grid with multiple breakpoints:
+From:
+
+<Grid item xs={12} md={4}>
+To:
+
+<Grid size={{ xs: 12, md: 4 }}>
+Update Grid with boolean values:
+From:
+
+<Grid xs>
+To:
+
+<Grid size="grow">
+Remove the item prop which is no longer needed:
+From:
+
+<Grid item>
+To:
+
+<Grid>
+Remove the zeroMinWidth prop which is no longer supported:
+From:
+
+<Grid item zeroMinWidth>
+To:
+
+<Grid>
+These changes should be applied to all Grid components. The error you're seeing is because in MUI v6+ and v7, the Grid component has been completely redesigned and no longer accepts the old API props like item and direct breakpoint props like xs, md, etc.
