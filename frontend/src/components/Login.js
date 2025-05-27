@@ -12,6 +12,7 @@ import {
   useMediaQuery,
   Alert,
   CircularProgress,
+  Snackbar,
 } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { loginStart, loginSuccess, loginFailure } from '../store/slices/authSlice';
@@ -91,6 +92,7 @@ const Login = () => {
     username: '',
     password: '',
   });
+  const [success, setSuccess] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const error = useSelector((state) => state.auth.error);
@@ -110,7 +112,10 @@ const Login = () => {
     try {
       const response = await login(formData.username, formData.password);
       dispatch(loginSuccess({ token: response.token, user: { username: formData.username } }));
-      navigate('/');
+      setSuccess(true);
+      setTimeout(() => {
+        navigate('/');
+      }, 1200);
     } catch (error) {
       dispatch(loginFailure(error.response?.data?.message || 'Login failed, check username or password.'));
     }
@@ -156,6 +161,12 @@ const Login = () => {
               {loading ? <CircularProgress size={24} color="inherit" /> : 'SIGN IN'}
             </StyledButton>
           </form>
+          <Snackbar
+            open={success}
+            autoHideDuration={1200}
+            message="Login successful, welcome back!"
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          />
         </FormSection>
 
         <WelcomeSection>

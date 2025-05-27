@@ -24,6 +24,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { api, generateRoadmap } from '../services/api';
 import Navbar from './Navbar';
+import GeneratingOverlay from './GeneratingOverlay';
 
 const steps = ['Basic Information', 'Domain & Levels', 'Timeline'];
 
@@ -120,6 +121,8 @@ const RoadmapCreator = () => {
   const [loading, setLoading] = useState(false);
   const [availableSkills, setAvailableSkills] = useState([]);
   const [availableResources, setAvailableResources] = useState([]);
+  const [generating, setGenerating] = useState(false);
+  const [pendingRoadmapId, setPendingRoadmapId] = useState(null);
 
   useEffect(() => {
     const fetchSkillsAndResources = async () => {
@@ -236,6 +239,7 @@ const RoadmapCreator = () => {
       return;
     }
     setLoading(true);
+    let roadmapId = null;
     try {
       const response = await generateRoadmap({
         title: formData.title,
@@ -246,12 +250,16 @@ const RoadmapCreator = () => {
         timeline: parseInt(formData.timeline),
         hours_per_week: parseInt(formData.hoursPerWeek),
       });
-      if (!response || !response.id) {
+      if (response && response.id) {
+        roadmapId = response.id;
+        setPendingRoadmapId(roadmapId);
+        setGenerating(true);
+      } else {
         setError('No roadmap could be generated for this input. Please change your timeline or other options.');
         setLoading(false);
+        setGenerating(false);
         return;
       }
-      navigate(`/roadmap/${response.id}`);
     } catch (error) {
       let errorMsg = 'Failed to create roadmap. Please try again.';
       if (error.response && error.response.data) {
@@ -259,7 +267,10 @@ const RoadmapCreator = () => {
       }
       setError(errorMsg);
       setLoading(false);
+      setGenerating(false);
+      return;
     }
+    // Do not navigate here; wait for overlay to finish
   };
 
   const getStepContent = (step) => {
@@ -382,6 +393,17 @@ const RoadmapCreator = () => {
 
   return (
     <StyledPage>
+      <GeneratingOverlay
+        open={generating}
+        onFinish={() => {
+          setGenerating(false);
+          setLoading(false);
+          if (pendingRoadmapId) {
+            navigate(`/roadmap/${pendingRoadmapId}`);
+            setPendingRoadmapId(null);
+          }
+        }}
+      />
       <Navbar />
       <Container maxWidth="sm" sx={{ py: 6 }}>
         <StyledPaper>
