@@ -109,7 +109,7 @@ const Navbar = () => {
           onClose={handleCloseMenu}
         >
           <MenuItem onClick={() => { navigate('/profile'); handleCloseMenu(); }}>Profile</MenuItem>
-          <MenuItem onClick={() => { navigate('/settings'); handleCloseMenu(); }}>Settings</MenuItem>
+          
           <MenuItem onClick={handleLogout}>Logout</MenuItem>
         </Menu>
       </Toolbar>

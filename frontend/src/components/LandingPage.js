@@ -41,7 +41,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 // Styled Components
 const LogoText = styled('span')(({ theme }) => ({
   fontWeight: 700,
-  fontSize: '1.5rem',
+  fontSize: '1.15rem',
   color: theme.palette.primary.main,
   letterSpacing: 0.5,
 }));
@@ -49,13 +49,15 @@ const LogoText = styled('span')(({ theme }) => ({
 const NavLink = styled(MuiLink)(({ theme }) => ({
   color: theme.palette.text.primary,
   fontWeight: 500,
-  fontSize: '1rem',
-  marginLeft: theme.spacing(4),
+  fontSize: '0.92rem',
+  marginLeft: theme.spacing(2.5),
   textDecoration: 'none',
   transition: 'color 0.2s',
+  cursor: 'pointer',
   '&:hover': {
     color: theme.palette.primary.main,
     textDecoration: 'none',
+    cursor: 'pointer',
   },
 }));
 
@@ -91,9 +93,9 @@ const HeroSubheadline = styled(Typography)(({ theme }) => ({
 
 const ActionButton = styled(Button)(({ theme }) => ({
   fontWeight: 600,
-  fontSize: '1.08rem',
+  fontSize: '0.98rem',
   borderRadius: 8,
-  padding: theme.spacing(1.2, 4),
+  padding: theme.spacing(0.7, 2.5),
   boxShadow: '0 2px 8px 0 rgba(33, 150, 243, 0.08)',
   textTransform: 'none',
 }));
@@ -308,8 +310,8 @@ const LandingPage = () => {
   return (
     <PageBackground>
       {/* Header */}
-      <AppBar position="sticky" elevation={0} sx={{ background: '#f7fafd', boxShadow: 'none', py: 1 }}>
-        <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 1, sm: 4 } }}>
+      <AppBar position="sticky" elevation={0} sx={{ background: '#f7fafd', boxShadow: 'none', py: 0.25, minHeight: 48 }}>
+        <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 0.5, sm: 2 }, minHeight: 40 }}>
           <LogoText onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>Connect+</LogoText>
           <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
             <NavLink href="#features" onClick={(e) => {
@@ -325,7 +327,7 @@ const LandingPage = () => {
               document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' });
             }}>FAQ</NavLink>
             <NavLink onClick={() => navigate('/login')} sx={{ ml: 4 }}>Login</NavLink>
-            <ActionButton variant="contained" color="primary" sx={{ ml: 4 }} onClick={() => navigate('/register')}>
+            <ActionButton variant="contained" color="primary" size="small" sx={{ ml: 4 }} onClick={() => navigate('/register')}>
               Get Started
             </ActionButton>
           </Box>
@@ -343,7 +345,7 @@ const LandingPage = () => {
               document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' });
             }}>FAQ</NavLink>
             <NavLink onClick={() => navigate('/login')} sx={{ mr: 1 }}>Login</NavLink>
-            <ActionButton variant="contained" color="primary" onClick={() => navigate('/register')}>
+            <ActionButton variant="contained" color="primary" size="small" onClick={() => navigate('/register')}>
               Get Started
             </ActionButton>
           </Box>
@@ -586,36 +588,53 @@ const LandingPage = () => {
           <Typography variant="h5" gutterBottom>
             {sampleRoadmaps[selectedCategory]?.title}
           </Typography>
-          <Grid container spacing={3} >
-            {sampleRoadmaps[selectedCategory]?.skills.map((skill) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={skill.id}>
-                <SkillChip
-                  onClick={() => handleSkillClick(skill)}
-                  skillLevel={skill.level}
-                  skillTitle={skill.title}
-                  sx={{
-                    ...(selectedSkillDetail?.id === skill.id && {
-                      backgroundColor: theme.palette.primary.main,
-                      color: theme.palette.common.white,
-                      borderColor: theme.palette.primary.main,
-                      '& .MuiTypography-root': {
-                        color: theme.palette.common.white,
-                      },
-                    })
-                  }}
-                  label={
-                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%' }}>
-                      <Typography variant="body1" sx={{ fontWeight: 600, lineHeight: 1 }}>{skill.title}</Typography>
-                      <Typography variant="body2" sx={{
-                        fontSize: '0.9rem',
-                        color: theme.palette.text.secondary,
-                      }}>{skill.level}</Typography>
-                    </Box>
-                  }
-                />
+          {(() => {
+            const skills = sampleRoadmaps[selectedCategory]?.skills || [];
+            const columns = 4;
+            const placeholders = (columns - (skills.length % columns)) % columns;
+            return (
+              <Grid container spacing={3}>
+                {skills.map((skill) => (
+                  <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={skill.id}>
+                    <SkillChip
+                      onClick={() => handleSkillClick(skill)}
+                      skillLevel={skill.level}
+                      skillTitle={skill.title}
+                      sx={{
+                        minHeight: 90,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        boxSizing: 'border-box',
+                        ...(selectedSkillDetail?.id === skill.id && {
+                          backgroundColor: theme.palette.primary.main,
+                          color: theme.palette.common.white,
+                          borderColor: theme.palette.primary.main,
+                          '& .MuiTypography-root': {
+                            color: theme.palette.common.white,
+                          },
+                        })
+                      }}
+                      label={
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%' }}>
+                          <Typography variant="body1" sx={{ fontWeight: 600, lineHeight: 1 }}>{skill.title}</Typography>
+                          <Typography variant="body2" sx={{
+                            fontSize: '0.9rem',
+                            color: theme.palette.text.secondary,
+                          }}>{skill.level}</Typography>
+                        </Box>
+                      }
+                    />
+                  </Grid>
+                ))}
+                {[...Array(placeholders)].map((_, i) => (
+                  <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={`placeholder-${i}`} sx={{ visibility: 'hidden' }}>
+                    <Box sx={{ minHeight: 90 }} />
+                  </Grid>
+                ))}
               </Grid>
-            ))}
-          </Grid>
+            );
+          })()}
         </RoadmapDisplayContainer>
 
         {selectedSkillDetail && (

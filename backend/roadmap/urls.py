@@ -12,4 +12,5 @@ router.register(r'progress', views.ProgressViewSet, basename='progress')
 urlpatterns = [
     path('', include(router.urls)),
     path('register/', views.register_user, name='register'),
+    path('user/', views.current_user, name='current_user'),
 ] 

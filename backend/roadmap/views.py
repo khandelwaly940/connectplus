@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from .models import Skill, Resource, Roadmap, RoadmapSkill, Progress
 from .serializers import (
     SkillSerializer, ResourceSerializer, RoadmapSerializer,
-    RoadmapSkillSerializer, ProgressSerializer, UserRegistrationSerializer
+    RoadmapSkillSerializer, ProgressSerializer, UserRegistrationSerializer, UserSerializer
 )
 from .services import RoadmapGenerator
 from rest_framework.permissions import AllowAny
@@ -184,3 +184,10 @@ def register_user(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+# Endpoint to get current user info
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def current_user(request):
+    serializer = UserSerializer(request.user)
+    return Response(serializer.data)
