@@ -14,6 +14,7 @@ import {
   Alert,
   Link as MuiLink,
   useMediaQuery,
+  MenuItem,
 } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { register } from '../services/api';
@@ -254,20 +255,17 @@ const Register = () => {
             />
             <StyledTextField // Using styled text field
               fullWidth
-              label="Experience Level " // Added asterisk
+              label="Experience Level *"
               name="experienceLevel"
               select
               value={formData.experienceLevel}
               onChange={handleChange}
               required
-              SelectProps={{
-                native: true,
-              }}
             >
-              <option value="">Select your experience level</option>
-              <option value="beginner">Beginner</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="advanced">Advanced</option>
+              <MenuItem value="">Select your experience level</MenuItem>
+              <MenuItem value="beginner">Beginner</MenuItem>
+              <MenuItem value="intermediate">Intermediate</MenuItem>
+              <MenuItem value="advanced">Advanced</MenuItem>
             </StyledTextField>
           </>
         );
