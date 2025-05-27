@@ -11,6 +11,7 @@ import {
   Link as MuiLink,
   useMediaQuery,
   Alert,
+  CircularProgress,
 } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { loginStart, loginSuccess, loginFailure } from '../store/slices/authSlice';
@@ -93,6 +94,7 @@ const Login = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const error = useSelector((state) => state.auth.error);
+  const loading = useSelector((state) => state.auth.loading);
 
   const handleChange = (e) => {
     setFormData({
@@ -150,8 +152,8 @@ const Login = () => {
                 Forgot Password?
               </MuiLink>
             </Box>
-            <StyledButton type="submit" fullWidth variant="contained" sx={{ backgroundColor: theme.palette.primary.main, '&:hover': { backgroundColor: theme.palette.primary.dark } }}>
-              SIGN IN
+            <StyledButton type="submit" fullWidth variant="contained" sx={{ backgroundColor: theme.palette.primary.main, '&:hover': { backgroundColor: theme.palette.primary.dark } }} disabled={loading}>
+              {loading ? <CircularProgress size={24} color="inherit" /> : 'SIGN IN'}
             </StyledButton>
           </form>
         </FormSection>
