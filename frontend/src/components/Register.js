@@ -15,9 +15,11 @@ import {
   Link as MuiLink,
   useMediaQuery,
   MenuItem,
+  Snackbar,
 } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { register } from '../services/api';
+import CircularProgress from '@mui/material/CircularProgress';
 
 // Styled Components (Copied from Login.js and adapted)
 const LogoText = styled('span')(({ theme }) => ({
@@ -104,6 +106,8 @@ const Register = () => {
     experienceLevel: '',
   });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
   const theme = useTheme();
 
   const handleChange = (e) => {
@@ -144,7 +148,7 @@ const Register = () => {
       setError('Please fill in all fields');
       return;
     }
-
+    setLoading(true);
     try {
       const registrationData = {
         username: formData.username,
@@ -156,8 +160,13 @@ const Register = () => {
         }
       };
       await register(registrationData);
-      navigate('/login');
+      setSuccess(true);
+      setTimeout(() => {
+        setLoading(false);
+        navigate('/login');
+      }, 1500);
     } catch (error) {
+      setLoading(false);
       if (error.response && error.response.data) {
         if (typeof error.response.data === 'string') {
           setError(error.response.data);
@@ -255,7 +264,7 @@ const Register = () => {
             />
             <StyledTextField // Using styled text field
               fullWidth
-              label="Experience Level *"
+              label="Experience Level "
               name="experienceLevel"
               select
               value={formData.experienceLevel}
@@ -313,11 +322,18 @@ const Register = () => {
                 variant="contained"
                 color="primary"
                 type="submit"
+                disabled={loading}
               >
-                {activeStep === steps.length - 1 ? 'Register' : 'Next'}
+                {activeStep === steps.length - 1 ? (loading ? <CircularProgress size={24} color="inherit" /> : 'Register') : 'Next'}
               </StyledButton>
             </Box>
           </form>
+          <Snackbar
+            open={success}
+            autoHideDuration={1500}
+            message="Registration Successful, You can Login in now..."
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          />
         </FormSection>
 
         <WelcomeSection>
