@@ -1,7 +1,11 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Container, Typography, Card, Box, Avatar, Button, Grid, Fade } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Navbar from './Navbar';
+import { api, getRoadmaps } from '../services/api';
+import TimelineIcon from '@mui/icons-material/Timeline';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import SchoolIcon from '@mui/icons-material/School';
 
 // Dashboard-style card
 const ProfileCard = styled(Card)(({ theme }) => ({
@@ -18,19 +22,61 @@ const ProfileCard = styled(Card)(({ theme }) => ({
   },
 }));
 
-const mockUser = {
-  username: 'johndoe',
-  name: 'John',
-  lastname: 'Doe',
-  email: 'johndoe@example.com',
-  avatar: '',
-};
-
 const Profile = () => {
-  const [user, setUser] = useState(mockUser);
-  const [avatarUrl, setAvatarUrl] = useState(user.avatar);
+  const [user, setUser] = useState({ username: '', email: '' });
+  const [avatarUrl, setAvatarUrl] = useState('');
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef();
+  const [stats, setStats] = useState({
+    activeRoadmaps: 0,
+    completedRoadmaps: 0,
+    averageProgress: 0,
+    completedSkills: 0,
+    totalLearningTime: 0,
+  });
+
+  useEffect(() => {
+    api.get('/user/')
+      .then(res => setUser(res.data))
+      .catch(() => {/* handle error */});
+  }, []);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const roadmaps = await getRoadmaps();
+        const active = roadmaps.filter(r => !r.completed);
+        const completed = roadmaps.filter(r => r.completed);
+        let totalProgress = 0;
+        let countWithSkills = 0;
+        let completedSkills = 0;
+        let totalSkills = 0;
+        let totalLearningTime = 0;
+        roadmaps.forEach(roadmap => {
+          if (roadmap.skills && roadmap.skills.length > 0) {
+            const roadmapCompletedSkills = roadmap.skills.filter(s => s.completed);
+            totalProgress += (roadmapCompletedSkills.length / roadmap.skills.length) * 100;
+            countWithSkills++;
+            completedSkills += roadmapCompletedSkills.length;
+            totalSkills += roadmap.skills.length;
+            roadmap.skills.forEach(s => {
+              if (s.skill && s.skill.estimated_time) {
+                totalLearningTime += s.skill.estimated_time;
+              }
+            });
+          }
+        });
+        setStats({
+          activeRoadmaps: active.length,
+          completedRoadmaps: completed.length,
+          averageProgress: countWithSkills > 0 ? totalProgress / countWithSkills : 0,
+          completedSkills,
+          totalLearningTime,
+        });
+      } catch (e) {}
+    };
+    fetchStats();
+  }, []);
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
@@ -55,10 +101,10 @@ const Profile = () => {
               <Box sx={{ position: 'relative', mb: 2 }}>
                 <Avatar
                   src={avatarUrl || undefined}
-                  alt={user.name}
+                  alt={user.username}
                   sx={{ width: 96, height: 96, boxShadow: 2, border: '3px solid #fff', background: '#e3e6f0', fontSize: 40 }}
                 >
-                  {(!avatarUrl && user.name) ? user.name[0] : ''}
+                  {(!avatarUrl && user.username) ? user.username[0] : ''}
                 </Avatar>
                 <Button
                   variant="contained"
@@ -88,13 +134,29 @@ const Profile = () => {
                 <Typography variant="subtitle2" color="text.secondary">Email</Typography>
                 <Typography variant="body1" sx={{ fontWeight: 600 }}>{user.email}</Typography>
               </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <Typography variant="subtitle2" color="text.secondary">First Name</Typography>
-                <Typography variant="body1" sx={{ fontWeight: 600 }}>{user.name}</Typography>
+            </Grid>
+            {/* Dashboard Stat Cards */}
+            <Grid container spacing={2} sx={{ mt: 4 }}>
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <Card sx={{ p: 3, textAlign: 'center', boxShadow: 2, borderRadius: 3, background: '#f0f6ff' }}>
+                  <EmojiEventsIcon sx={{ fontSize: 36, color: '#1976d2', mb: 1 }} />
+                  <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>{stats.completedRoadmaps}</Typography>
+                  <Typography variant="body2" color="text.secondary">Completed Roadmaps</Typography>
+                </Card>
               </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <Typography variant="subtitle2" color="text.secondary">Last Name</Typography>
-                <Typography variant="body1" sx={{ fontWeight: 600 }}>{user.lastname}</Typography>
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <Card sx={{ p: 3, textAlign: 'center', boxShadow: 2, borderRadius: 3, background: '#f0f6ff' }}>
+                  <TimelineIcon sx={{ fontSize: 36, color: '#1976d2', mb: 1 }} />
+                  <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>{stats.completedSkills}</Typography>
+                  <Typography variant="body2" color="text.secondary">Skills Mastered</Typography>
+                </Card>
+              </Grid>
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <Card sx={{ p: 3, textAlign: 'center', boxShadow: 2, borderRadius: 3, background: '#f0f6ff' }}>
+                  <SchoolIcon sx={{ fontSize: 36, color: '#1976d2', mb: 1 }} />
+                  <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>{stats.totalLearningTime}h</Typography>
+                  <Typography variant="body2" color="text.secondary">Learning Time</Typography>
+                </Card>
               </Grid>
             </Grid>
           </ProfileCard>
