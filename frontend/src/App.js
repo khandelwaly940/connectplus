@@ -15,6 +15,7 @@ import RoadmapView from './components/RoadmapView';
 import PrivateRoute from './components/PrivateRoute';
 import Profile from './components/Profile';
 import Settings from './components/Settings';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const theme = createTheme({
   palette: {
@@ -33,63 +34,85 @@ function AppContent() {
   const isLanding = location.pathname === '/';
 
   return (
-    <>
-      <Routes>
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
         <Route 
           path="/" 
-          element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LandingPage />} 
+          element={
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              {isAuthenticated ? <Navigate to="/dashboard" replace /> : <LandingPage />}
+            </motion.div>
+          }
         />
         <Route 
           path="/login" 
-          element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />} 
+          element={
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              {isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />}
+            </motion.div>
+          }
         />
         <Route 
           path="/register" 
-          element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Register />} 
+          element={
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              {isAuthenticated ? <Navigate to="/dashboard" replace /> : <Register />}
+            </motion.div>
+          }
         />
         <Route
           path="/dashboard"
           element={
-            <PrivateRoute>
-              <Dashboard />
-            </PrivateRoute>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            </motion.div>
           }
         />
         <Route
           path="/create"
           element={
-            <PrivateRoute>
-              <RoadmapCreator />
-            </PrivateRoute>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <PrivateRoute>
+                <RoadmapCreator />
+              </PrivateRoute>
+            </motion.div>
           }
         />
         <Route
           path="/roadmap/:id"
           element={
-            <PrivateRoute>
-              <RoadmapView />
-            </PrivateRoute>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <PrivateRoute>
+                <RoadmapView />
+              </PrivateRoute>
+            </motion.div>
           }
         />
         <Route
           path="/profile"
           element={
-            <PrivateRoute>
-              <Profile />
-            </PrivateRoute>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <PrivateRoute>
+                <Profile />
+              </PrivateRoute>
+            </motion.div>
           }
         />
         <Route
           path="/settings"
           element={
-            <PrivateRoute>
-              <Settings />
-            </PrivateRoute>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <PrivateRoute>
+                <Settings />
+              </PrivateRoute>
+            </motion.div>
           }
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </>
+    </AnimatePresence>
   );
 }
 
