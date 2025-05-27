@@ -91,6 +91,7 @@ const Login = () => {
     username: '',
     password: '',
   });
+  const [loginSuccess, setLoginSuccess] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const error = useSelector((state) => state.auth.error);
@@ -110,7 +111,10 @@ const Login = () => {
     try {
       const response = await login(formData.username, formData.password);
       dispatch(loginSuccess({ token: response.token, user: { username: formData.username } }));
-      navigate('/');
+      setLoginSuccess(true);
+      setTimeout(() => {
+        navigate('/');
+      }, 1000); // 1 second delay
     } catch (error) {
       dispatch(loginFailure(error.response?.data?.message || 'Login failed, check username or password.'));
     }
@@ -128,6 +132,11 @@ const Login = () => {
           </Typography>
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
+          )}
+          {loginSuccess && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              Login successful, welcome back!
+            </Alert>
           )}
           <form onSubmit={handleSubmit}>
             <StyledTextField
