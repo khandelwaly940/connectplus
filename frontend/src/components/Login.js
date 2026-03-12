@@ -85,6 +85,12 @@ const StyledButton = styled(Button)(({ theme }) => ({
   boxShadow: 'none',
 }));
 
+const HostingNotice = styled(Alert)(({ theme }) => ({
+  marginBottom: theme.spacing(3),
+  borderRadius: 12,
+  alignItems: 'flex-start',
+}));
+
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -131,6 +137,9 @@ const Login = () => {
           <Typography variant="h5" component="h1" gutterBottom>
             Sign In
           </Typography>
+          <HostingNotice severity="info" icon={false}>
+            This project runs on free hosting. Login can take up to 60 seconds while the server wakes up.
+          </HostingNotice>
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
           )}
@@ -160,6 +169,11 @@ const Login = () => {
             <StyledButton type="submit" fullWidth variant="contained" sx={{ backgroundColor: theme.palette.primary.main, '&:hover': { backgroundColor: theme.palette.primary.dark } }} disabled={loading}>
               {loading ? <CircularProgress size={24} color="inherit" /> : 'SIGN IN'}
             </StyledButton>
+            {loading && (
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 2, textAlign: 'center' }}>
+                Free server wake-up in progress. Please wait up to a minute.
+              </Typography>
+            )}
           </form>
           <Snackbar
             open={success}

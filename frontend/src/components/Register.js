@@ -89,6 +89,12 @@ const StyledButton = styled(Button)(({ theme }) => ({
   boxShadow: 'none',
 }));
 
+const HostingNotice = styled(Alert)(({ theme }) => ({
+  marginBottom: theme.spacing(3),
+  borderRadius: 12,
+  alignItems: 'flex-start',
+}));
+
 const steps = ['Account Information', 'Personal Details', 'Learning Goals'];
 
 const Register = () => {
@@ -294,6 +300,9 @@ const Register = () => {
           <Typography variant="h5" component="h1" gutterBottom>
             Create Your Account
           </Typography>
+          <HostingNotice severity="info" icon={false}>
+            This project runs on free hosting. Signup can take up to 60 seconds while the server wakes up.
+          </HostingNotice>
           <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
             {steps.map((label) => (
               <Step key={label}>
@@ -327,6 +336,11 @@ const Register = () => {
                 {activeStep === steps.length - 1 ? (loading ? <CircularProgress size={24} color="inherit" /> : 'Register') : 'Next'}
               </StyledButton>
             </Box>
+            {loading && (
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 2, textAlign: 'center' }}>
+                Free server wake-up in progress. Please wait up to a minute.
+              </Typography>
+            )}
           </form>
           <Snackbar
             open={success}
