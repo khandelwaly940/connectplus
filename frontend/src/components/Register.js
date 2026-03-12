@@ -160,6 +160,8 @@ const Register = () => {
         username: formData.username,
         email: formData.email,
         password: formData.password,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
         profile: {
           learning_goals: formData.learningGoals,
           experience_level: formData.experienceLevel
