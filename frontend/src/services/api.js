@@ -1,6 +1,17 @@
 import axios from 'axios';
 
-const API_URL = 'https://connectplus-7zyd.onrender.com/api';
+const DEFAULT_API_URL = 'https://connectplus-7zyd.onrender.com/api';
+
+const normalizeApiUrl = (value) => {
+  if (!value) {
+    return DEFAULT_API_URL;
+  }
+
+  const trimmed = value.trim().replace(/\/+$/, '');
+  return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+};
+
+const API_URL = normalizeApiUrl(process.env.REACT_APP_API_URL);
 
 const api = axios.create({
   baseURL: API_URL,
