@@ -40,8 +40,6 @@ import {
   Edit,
   Delete,
   ArrowBack,
-  Bookmark,
-  BookmarkBorder,
   AccessTime,
   School,
   EmojiEvents,
@@ -171,7 +169,6 @@ const RoadmapView = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedSkill, setSelectedSkill] = useState(null);
   const [note, setNote] = useState('');
-  const [isBookmarked, setIsBookmarked] = useState(false);
   const [selectedResourceType, setSelectedResourceType] = useState({});
   const [expandedResources, setExpandedResources] = useState({});
   const [allRoadmaps, setAllRoadmaps] = useState([]);
@@ -237,7 +234,7 @@ const RoadmapView = () => {
   };
 
   const handleAddNote = async () => {
-    if (!note.trim()) return;
+    if (!note.trim() || !selectedSkill) return;
 
     try {
       await api.post(`/roadmaps/${id}/skills/${selectedSkill.id}/notes/`, {
@@ -260,17 +257,10 @@ const RoadmapView = () => {
     }
   };
 
-  const handleToggleBookmark = async () => {
-    try {
-      if (isBookmarked) {
-        await api.delete(`/roadmaps/${id}/bookmark/`);
-      } else {
-        await api.post(`/roadmaps/${id}/bookmark/`);
-      }
-      setIsBookmarked(!isBookmarked);
-    } catch (error) {
-      setError('Failed to update bookmark status');
-    }
+  const openNoteDialog = (skill) => {
+    setSelectedSkill(skill);
+    setNote('');
+    setOpenDialog(true);
   };
 
   const calculateProgress = () => {
@@ -714,6 +704,52 @@ const RoadmapView = () => {
                               sx={{ fontWeight: 500, fontSize: '0.98rem', background: '#f5f6fa', color: '#555', textTransform: 'capitalize', px: 1.5, borderRadius: 2, boxShadow: 'none' }}
                             />
                           </Box>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, ml: 5, mb: 2, flexWrap: 'wrap' }}>
+                            <Button
+                              variant="outlined"
+                              size="small"
+                              startIcon={<Add />}
+                              onClick={() => openNoteDialog(step)}
+                            >
+                              Add Note
+                            </Button>
+                            {step.notes?.length > 0 && (
+                              <Typography variant="body2" color="text.secondary">
+                                {step.notes.length} note{step.notes.length > 1 ? 's' : ''}
+                              </Typography>
+                            )}
+                          </Box>
+                          {step.notes?.length > 0 && (
+                            <Box sx={{ ml: 5, mb: 2, display: 'grid', gap: 1.5 }}>
+                              {step.notes.map((entry) => (
+                                <Paper
+                                  key={entry.id}
+                                  variant="outlined"
+                                  sx={{ p: 1.5, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2 }}
+                                >
+                                  <Box sx={{ minWidth: 0 }}>
+                                    <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
+                                      {entry.content}
+                                    </Typography>
+                                    {entry.created_at && (
+                                      <Typography variant="caption" color="text.secondary">
+                                        {new Date(entry.created_at).toLocaleString()}
+                                      </Typography>
+                                    )}
+                                  </Box>
+                                  <Tooltip title="Delete note">
+                                    <IconButton
+                                      size="small"
+                                      color="error"
+                                      onClick={() => handleDeleteNote(step.id, entry.id)}
+                                    >
+                                      <Delete fontSize="small" />
+                                    </IconButton>
+                                  </Tooltip>
+                                </Paper>
+                              ))}
+                            </Box>
+                          )}
                           <Box sx={{ mt: 3 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                               <Typography variant="h6" sx={{ mr: 2, fontWeight: 700, fontSize: '1.08rem', color: '#1976d2' }}>Learning Resources</Typography>
@@ -853,7 +889,7 @@ const RoadmapView = () => {
         })}
 
         <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-          <DialogTitle>Add Note for {selectedSkill?.name}</DialogTitle>
+          <DialogTitle>Add Note for {selectedSkill?.skill?.name}</DialogTitle>
           <DialogContent>
             <TextField
               autoFocus

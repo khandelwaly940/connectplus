@@ -86,6 +86,24 @@ class RoadmapViewSet(viewsets.ModelViewSet):
         roadmap_skill.save()
         return Response({'status': 'note added'})
 
+    @action(detail=True, methods=['post'], url_path=r'skills/(?P<skill_id>[^/.]+)/notes')
+    def add_skill_note(self, request, pk=None, skill_id=None):
+        return self.add_note(request, pk=pk, skill_id=skill_id)
+
+    @action(detail=True, methods=['delete'], url_path=r'skills/(?P<skill_id>[^/.]+)/notes/(?P<note_id>[^/.]+)')
+    def delete_skill_note(self, request, pk=None, skill_id=None, note_id=None):
+        roadmap = self.get_object()
+        roadmap_skill = get_object_or_404(RoadmapSkill, roadmap=roadmap, id=skill_id)
+        notes = roadmap_skill.notes or []
+        updated_notes = [note for note in notes if str(note.get('id')) != str(note_id)]
+
+        if len(updated_notes) == len(notes):
+            return Response({'error': 'Note not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        roadmap_skill.notes = updated_notes
+        roadmap_skill.save()
+        return Response({'status': 'note deleted'})
+
     @action(detail=True, methods=['post'])
     def complete_all_skills(self, request, pk=None):
         roadmap = self.get_object()
