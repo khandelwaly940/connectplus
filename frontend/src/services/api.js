@@ -82,4 +82,9 @@ export const updateProgress = async (progressId, resourceId, timeSpent) => {
 export const register = async (userData) => {
   const response = await api.post('/register/', userData);
   return response.data;
-}; 
+};
+
+export const getCurrentUser = async () => {
+  const response = await api.get('/user/');
+  return response.data;
+};

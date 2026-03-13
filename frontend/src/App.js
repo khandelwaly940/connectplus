@@ -1,11 +1,9 @@
-import CssBaseline from '@mui/material/CssBaseline';
-import React from 'react';
+import React, { useEffect } from 'react';
 //import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { Provider } from 'react-redux';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import { ThemeProvider, createTheme } from '@mui/material';
 import { store } from './store';
-import Navbar from './components/Navbar';
 import Login from './components/Login';
 import Register from './components/Register';
 import LandingPage from './components/LandingPage';
@@ -16,6 +14,8 @@ import PrivateRoute from './components/PrivateRoute';
 import Profile from './components/Profile';
 import Settings from './components/Settings';
 import { AnimatePresence, motion } from 'framer-motion';
+import { getCurrentUser } from './services/api';
+import { loginStart, setUser, logout } from './store/slices/authSlice';
 
 const theme = createTheme({
   palette: {
@@ -29,9 +29,34 @@ const theme = createTheme({
 });
 
 function AppContent() {
-  const isAuthenticated = localStorage.getItem('token') !== null;
+  const dispatch = useDispatch();
+  const { token, isAuthenticated, user } = useSelector((state) => state.auth);
   const location = useLocation();
-  const isLanding = location.pathname === '/';
+
+  useEffect(() => {
+    if (!token || user) {
+      return;
+    }
+
+    let isMounted = true;
+    dispatch(loginStart());
+
+    getCurrentUser()
+      .then((userData) => {
+        if (isMounted) {
+          dispatch(setUser(userData));
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          dispatch(logout());
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [dispatch, token, user]);
 
   return (
     <AnimatePresence mode="wait">
