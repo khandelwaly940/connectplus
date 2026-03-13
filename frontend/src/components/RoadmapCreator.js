@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Container,
@@ -14,15 +14,13 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Chip,
   Alert,
-  CircularProgress,
   Grid,
-  Autocomplete,
-  LinearProgress,
+  useMediaQuery,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { api, generateRoadmap } from '../services/api';
+import { styled, useTheme } from '@mui/material/styles';
+import { generateRoadmap } from '../services/api';
+import { getApiErrorMessage } from '../utils/apiError';
 import Navbar from './Navbar';
 import GeneratingOverlay from './GeneratingOverlay';
 
@@ -35,15 +33,6 @@ const DOMAIN_OPTIONS = [
   { value: 'Java', label: 'Java' },
   { value: 'DSA', label: 'DSA' },
   { value: 'Android', label: 'Android Development' },
-];
-
-const RESOURCE_TYPE_OPTIONS = [
-  { value: 'video', label: 'Free Video' },
-  { value: 'documentation', label: 'Documentation' },
-  { value: 'article', label: 'GFG/Article' },
-  { value: 'book', label: 'Book' },
-  { value: 'course', label: 'Course' },
-  { value: 'practice', label: 'Practice' },
 ];
 
 const LEVELS = [
@@ -84,6 +73,11 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   margin: 'auto',
   marginTop: theme.spacing(0.5),
   marginBottom: theme.spacing(6),
+  [theme.breakpoints.down('sm')]: {
+    width: '100%',
+    padding: theme.spacing(3, 2),
+    borderRadius: 14,
+  },
 }));
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
@@ -106,12 +100,13 @@ const StyledButton = styled(Button)(({ theme }) => ({
 
 const RoadmapCreator = () => {
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     category: '',
-    resourceTypes: [],
     currentLevel: '',
     targetLevel: '',
     timeline: '',
@@ -119,59 +114,13 @@ const RoadmapCreator = () => {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [availableSkills, setAvailableSkills] = useState([]);
-  const [availableResources, setAvailableResources] = useState([]);
   const [generating, setGenerating] = useState(false);
   const [pendingRoadmapId, setPendingRoadmapId] = useState(null);
-
-  useEffect(() => {
-    const fetchSkillsAndResources = async () => {
-      try {
-        const [skillsResponse, resourcesResponse] = await Promise.all([
-          api.get('/skills/'),
-          api.get('/resources/'),
-        ]);
-        
-        // Sort skills by name and remove duplicates
-        const uniqueSkills = Array.from(new Set(skillsResponse.data.map(skill => skill.name)))
-          .map(name => {
-            const skill = skillsResponse.data.find(s => s.name === name);
-            return {
-              id: skill.id,
-              name: name,
-              description: skill.description,
-              difficulty_level: skill.difficulty_level
-            };
-          })
-          .sort((a, b) => a.name.localeCompare(b.name));
-
-        // Sort resources by title
-        const sortedResources = resourcesResponse.data
-          .sort((a, b) => a.title.localeCompare(b.title));
-
-        setAvailableSkills(uniqueSkills);
-        setAvailableResources(sortedResources);
-      } catch (error) {
-        setError('Failed to load skills and resources');
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchSkillsAndResources();
-  }, []);
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
-    });
-    setError('');
-  };
-
-  const handleResourceTypeChange = (event) => {
-    setFormData({
-      ...formData,
-      resourceTypes: event.target.value,
     });
     setError('');
   };
@@ -261,11 +210,7 @@ const RoadmapCreator = () => {
         return;
       }
     } catch (error) {
-      let errorMsg = 'Failed to create roadmap. Please try again.';
-      if (error.response && error.response.data) {
-        errorMsg = JSON.stringify(error.response.data, null, 2);
-      }
-      setError(errorMsg);
+      setError(getApiErrorMessage(error, 'Failed to create roadmap. Please try again.'));
       setLoading(false);
       setGenerating(false);
       return;
@@ -405,19 +350,19 @@ const RoadmapCreator = () => {
         }}
       />
       <Navbar />
-      <Container maxWidth="sm" sx={{ py: 6 }}>
+      <Container maxWidth="sm" sx={{ py: { xs: 2, sm: 6 } }}>
         <StyledPaper>
-          <Typography variant="h4" component="h1" align="center" sx={{ fontWeight: 800, mb: 4 }}>
+          <Typography variant="h4" component="h1" align="center" sx={{ fontWeight: 800, mb: 4, fontSize: { xs: '1.6rem', sm: '2.125rem' } }}>
             Create a New Roadmap
           </Typography>
-          <Stepper activeStep={activeStep} sx={{ mb: 5, background: 'transparent' }} alternativeLabel>
+          <Stepper activeStep={activeStep} sx={{ mb: 5, background: 'transparent' }} alternativeLabel={!isMobile}>
             {steps.map((label, idx) => (
               <Step key={label}>
                 <StepLabel
                   sx={{
                     '& .MuiStepLabel-label': {
                       fontWeight: 600,
-                      fontSize: '1.1rem',
+                      fontSize: isMobile ? '0.85rem' : '1.1rem',
                       color: activeStep === idx ? 'primary.main' : '#888',
                     },
                     '& .MuiStepIcon-root': {
@@ -436,12 +381,13 @@ const RoadmapCreator = () => {
           )}
           <form onSubmit={activeStep === steps.length - 1 ? handleSubmit : (e) => { e.preventDefault(); handleNext(); }}>
             {getStepContent(activeStep)}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 5 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 5, gap: 1.5 }}>
               <StyledButton
                 disabled={activeStep === 0}
                 onClick={handleBack}
                 variant="text"
                 color="primary"
+                sx={{ flex: isMobile ? 1 : 'unset' }}
               >
                 Back
               </StyledButton>
@@ -451,7 +397,7 @@ const RoadmapCreator = () => {
                 type={activeStep === steps.length - 1 ? 'submit' : 'button'}
                 onClick={activeStep === steps.length - 1 ? undefined : handleNext}
                 disabled={loading}
-                sx={{ minWidth: 140 }}
+                sx={{ minWidth: 140, flex: isMobile ? 1 : 'unset' }}
               >
                 {activeStep === steps.length - 1 ? (loading ? 'Creating...' : 'Finish & Generate Roadmap') : 'Next Step'}
               </StyledButton>

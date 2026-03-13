@@ -189,10 +189,10 @@ const Dashboard = () => {
   return (
     <>
       <Navbar />
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 4 }}>
+      <Container maxWidth="lg" sx={{ py: { xs: 2, sm: 4 } }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: { xs: 'stretch', sm: 'flex-start' }, flexDirection: { xs: 'column', sm: 'row' }, gap: 2, mb: 4 }}>
           <Box>
-            <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', mb: 1 }}>
+            <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', mb: 1, fontSize: { xs: '1.6rem', sm: '2.125rem' } }}>
               Dashboard
             </Typography>
             <Typography variant="subtitle1" color="text.secondary">
@@ -202,7 +202,7 @@ const Dashboard = () => {
           <Button
             variant="contained"
             color="primary"
-            sx={{ borderRadius: 2, px: 3, py: 1, fontWeight: 'bold', fontSize: '1rem', boxShadow: 2 }}
+            sx={{ borderRadius: 2, px: 3, py: 1, fontWeight: 'bold', fontSize: '1rem', boxShadow: 2, width: { xs: '100%', sm: 'auto' } }}
             startIcon={<AddIcon />}
             onClick={() => navigate('/create')}
           >
@@ -219,6 +219,10 @@ const Dashboard = () => {
               borderRadius: 2,
               p: 0.5,
               boxShadow: 'none',
+              width: { xs: '100%', sm: 'auto' },
+              '& .MuiToggleButton-root': {
+                flex: { xs: 1, sm: 'unset' },
+              },
             }}
           >
             <ToggleButton
@@ -229,7 +233,7 @@ const Dashboard = () => {
                 px: 3,
                 py: 1,
                 fontWeight: 'bold',
-                fontSize: '1.1rem',
+                fontSize: { xs: '0.92rem', sm: '1.1rem' },
                 color: '#444',
                 backgroundColor: '#fff',
                 border: '1.5px solid #e3e6f0',
@@ -258,7 +262,7 @@ const Dashboard = () => {
                 px: 3,
                 py: 1,
                 fontWeight: 'bold',
-                fontSize: '1.1rem',
+                fontSize: { xs: '0.92rem', sm: '1.1rem' },
                 color: '#444',
                 backgroundColor: '#fff',
                 border: '1.5px solid #e3e6f0',

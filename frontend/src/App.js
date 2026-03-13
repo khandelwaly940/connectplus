@@ -19,11 +19,57 @@ import { loginStart, setUser, logout } from './store/slices/authSlice';
 
 const theme = createTheme({
   palette: {
+    background: {
+      default: '#f7fafd',
+      paper: '#ffffff',
+    },
     primary: {
       main: '#1976d2',
     },
     secondary: {
       main: '#dc004e',
+    },
+  },
+  shape: {
+    borderRadius: 12,
+  },
+  typography: {
+    fontFamily: '"Space Grotesk", "Poppins", sans-serif',
+    h4: {
+      fontWeight: 800,
+      letterSpacing: '-0.02em',
+    },
+    h5: {
+      fontWeight: 700,
+      letterSpacing: '-0.01em',
+    },
+    button: {
+      fontWeight: 600,
+      letterSpacing: '0.01em',
+      textTransform: 'none',
+    },
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 10,
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 16,
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          borderRadius: 14,
+        },
+      },
     },
   },
 });

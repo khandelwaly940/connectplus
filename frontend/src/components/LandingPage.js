@@ -9,22 +9,20 @@ import {
   Container,
   Link as MuiLink,
   useTheme,
-  useMediaQuery,
+  IconButton,
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemText,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import SchoolIcon from '@mui/icons-material/School';
-import TimelineIcon from '@mui/icons-material/Timeline';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import PeopleIcon from '@mui/icons-material/People';
 import CodeIcon from '@mui/icons-material/Code';
 import MapIcon from '@mui/icons-material/Map';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
-import ExploreIcon from '@mui/icons-material/Explore';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ShareIcon from '@mui/icons-material/Share';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import DescriptionIcon from '@mui/icons-material/Description';
 import ToggleButton from '@mui/material/ToggleButton';
@@ -37,6 +35,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import MenuIcon from '@mui/icons-material/Menu';
 
 // Styled Components
 const LogoText = styled('span')(({ theme }) => ({
@@ -72,9 +71,12 @@ const HeroImage = styled('img')(({ theme }) => ({
 
 const HeroHeadline = styled(Typography)(({ theme }) => ({
   fontWeight: 800,
-  fontSize: '2.5rem',
+  fontSize: '2rem',
   lineHeight: 1.15,
   marginBottom: theme.spacing(3),
+  [theme.breakpoints.up('sm')]: {
+    fontSize: '2.5rem',
+  },
   [theme.breakpoints.up('md')]: {
     fontSize: '3.2rem',
   },
@@ -86,9 +88,12 @@ const Highlight = styled('span')(({ theme }) => ({
 
 const HeroSubheadline = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.secondary,
-  fontSize: '1.15rem',
+  fontSize: '1rem',
   marginBottom: theme.spacing(4),
   maxWidth: 480,
+  [theme.breakpoints.up('sm')]: {
+    fontSize: '1.15rem',
+  },
 }));
 
 const ActionButton = styled(Button)(({ theme }) => ({
@@ -113,6 +118,9 @@ const SecondaryButton = styled(Button)(({ theme }) => ({
   '&:hover': {
     background: theme.palette.action.hover,
     borderColor: theme.palette.primary.main,
+  },
+  [theme.breakpoints.down('sm')]: {
+    marginLeft: 0,
   },
 }));
 
@@ -227,7 +235,7 @@ const FaqAccordionDetails = styled(AccordionDetails)(({ theme }) => ({
 const LandingPage = () => {
   const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('Web Development');
 
   const sampleRoadmaps = {
@@ -331,26 +339,40 @@ const LandingPage = () => {
               Get Started
             </ActionButton>
           </Box>
-          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-            <NavLink href="#features" onClick={(e) => {
-              e.preventDefault();
-              document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
-            }}>Features</NavLink>
-            <NavLink href="#examples" onClick={(e) => {
-              e.preventDefault();
-              document.getElementById('examples')?.scrollIntoView({ behavior: 'smooth' });
-            }}>Examples</NavLink>
-            <NavLink href="#faq" onClick={(e) => {
-              e.preventDefault();
-              document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' });
-            }}>FAQ</NavLink>
-            <NavLink onClick={() => navigate('/login')} sx={{ mr: 1 }}>Login</NavLink>
+          <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', gap: 1 }}>
+            <Button size="small" onClick={() => navigate('/login')} sx={{ textTransform: 'none', minWidth: 0, px: 1 }}>
+              Login
+            </Button>
             <ActionButton variant="contained" color="primary" size="small" onClick={() => navigate('/register')}>
-              Get Started
+              Sign Up
             </ActionButton>
+            <IconButton onClick={() => setMobileNavOpen(true)} aria-label="open menu">
+              <MenuIcon />
+            </IconButton>
           </Box>
         </Toolbar>
       </AppBar>
+      <Drawer anchor="right" open={mobileNavOpen} onClose={() => setMobileNavOpen(false)}>
+        <Box sx={{ width: 260, p: 1 }}>
+          <List>
+            {[
+              { label: 'Features', id: 'features' },
+              { label: 'Examples', id: 'examples' },
+              { label: 'FAQ', id: 'faq' },
+            ].map((item) => (
+              <ListItemButton
+                key={item.id}
+                onClick={() => {
+                  setMobileNavOpen(false);
+                  document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
+                <ListItemText primary={item.label} />
+              </ListItemButton>
+            ))}
+          </List>
+        </Box>
+      </Drawer>
 
       {/* Hero Section */}
       <Container maxWidth="lg" sx={{ pt: { xs: 6, md: 12 }, pb: { xs: 6, md: 10 } }}>
@@ -472,13 +494,14 @@ const LandingPage = () => {
           See how our roadmaps can guide your learning journey with structured paths to mastery.
         </Typography>
 
-        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4, overflowX: 'auto', pb: 1 }}>
           <ToggleButtonGroup
             value={selectedCategory}
             exclusive
             onChange={handleCategoryChange}
             aria-label="roadmap category selection"
             sx={{
+              minWidth: 'max-content',
               '& .MuiToggleButtonGroup-grouped': {
                 margin: theme.spacing(0.5),
                 border: '1px solid',

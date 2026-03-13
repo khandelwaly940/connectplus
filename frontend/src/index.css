@@ -1,32 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+:root {
+  --cp-bg: #f7fafd;
+  --cp-surface: #ffffff;
+  --cp-text: #122033;
+  --cp-muted: #5f6b7a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Poppins', sans-serif;
+  color: var(--cp-text);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(25, 118, 210, 0.09), transparent 42%),
+    radial-gradient(circle at 100% 0%, rgba(33, 150, 243, 0.07), transparent 38%),
+    var(--cp-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: 'Space Grotesk', monospace;
 }
-
-/* .features-mui-grid {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  flex-direction: row !important;
-  gap: 32px; 
-}
-
-.features-mui-grid > .MuiGrid-item {
-  flex: 1 1 calc(33.333% - 32px); 
-  max-width: calc(33.333% - 32px);
-  min-width: 280px; 
-  box-sizing: border-box;
-  display: flex !important;
-  flex-direction: column;
-}
-.features-mui-grid > .MuiGrid-item {
-  width: calc(33.333% - 32px) !important;
-} */

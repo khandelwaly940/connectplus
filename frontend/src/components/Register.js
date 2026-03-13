@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import {
-  Container,
-  Paper,
   TextField,
   Button,
   Typography,
@@ -12,7 +9,6 @@ import {
   Step,
   StepLabel,
   Alert,
-  Link as MuiLink,
   useMediaQuery,
   MenuItem,
   Snackbar,
@@ -20,6 +16,7 @@ import {
 import { styled, useTheme } from '@mui/material/styles';
 import { register } from '../services/api';
 import CircularProgress from '@mui/material/CircularProgress';
+import { getApiErrorMessage } from '../utils/apiError';
 
 // Styled Components (Copied from Login.js and adapted)
 const LogoText = styled('span')(({ theme }) => ({
@@ -47,6 +44,10 @@ const StyledContainer = styled(Box)(({ theme }) => ({
   width: '100%',
   maxWidth: 700, // Match login page container
   backgroundColor: '#fff',
+  [theme.breakpoints.down('md')]: {
+    flexDirection: 'column-reverse',
+    maxWidth: 460,
+  },
 }));
 
 const FormSection = styled(Box)(({ theme }) => ({
@@ -55,6 +56,9 @@ const FormSection = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(3),
+  },
 }));
 
 const WelcomeSection = styled(Box)(({ theme }) => ({
@@ -69,6 +73,13 @@ const WelcomeSection = styled(Box)(({ theme }) => ({
   backgroundImage: `linear-gradient(to bottom right, ${theme.palette.primary.light}, ${theme.palette.primary.main})`,
   borderTopLeftRadius: 24,
   borderBottomLeftRadius: 24,
+  [theme.breakpoints.down('md')]: {
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
+    borderTopRightRadius: 24,
+    borderBottomRightRadius: 24,
+    padding: theme.spacing(3),
+  },
 }));
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
@@ -99,7 +110,6 @@ const steps = ['Account Information', 'Personal Details', 'Learning Goals'];
 
 const Register = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
     username: '',
@@ -115,6 +125,7 @@ const Register = () => {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleChange = (e) => {
     setFormData({
@@ -175,21 +186,7 @@ const Register = () => {
       }, 1500);
     } catch (error) {
       setLoading(false);
-      if (error.response && error.response.data) {
-        if (typeof error.response.data === 'string') {
-          setError(error.response.data);
-        } else if (error.response.data.message) {
-          setError(error.response.data.message);
-        } else {
-          setError(
-            Object.entries(error.response.data)
-              .map(([field, msg]) => `${field}: ${Array.isArray(msg) ? msg.join(', ') : msg}`)
-              .join(' | ')
-          );
-        }
-      } else {
-        setError('Registration failed');
-      }
+      setError(getApiErrorMessage(error, 'Registration failed'));
     }
   };
 
@@ -305,7 +302,7 @@ const Register = () => {
           <HostingNotice severity="info" icon={false}>
             This project runs on free hosting. Signup can take up to 60 seconds while the server wakes up.
           </HostingNotice>
-          <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+          <Stepper activeStep={activeStep} sx={{ mb: 4 }} alternativeLabel={!isMobile}>
             {steps.map((label) => (
               <Step key={label}>
                 <StepLabel>{label}</StepLabel>

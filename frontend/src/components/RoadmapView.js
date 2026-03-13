@@ -5,9 +5,6 @@ import {
   Paper,
   Typography,
   Box,
-  Stepper,
-  Step,
-  StepLabel,
   Button,
   Card,
   CardContent,
@@ -31,13 +28,10 @@ import {
   MenuItem,
   Collapse,
   Fade,
-  Box as MuiBox,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import {
-  CheckCircle,
   Add,
-  Edit,
   Delete,
   ArrowBack,
   AccessTime,
@@ -58,6 +52,7 @@ import {
 import { api, getRoadmaps } from '../services/api';
 import Navbar from './Navbar';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getApiErrorMessage } from '../utils/apiError';
 
 const RESOURCE_TYPE_OPTIONS = [
   { value: 'video', label: 'Free Video' },
@@ -67,17 +62,6 @@ const RESOURCE_TYPE_OPTIONS = [
   { value: 'course', label: 'Course' },
   { value: 'practice', label: 'Practice' },
 ];
-
-const SkillCard = styled(Card)(({ theme }) => ({
-  height: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  transition: 'transform 0.2s, box-shadow 0.2s',
-  '&:hover': {
-    transform: 'translateY(-4px)',
-    boxShadow: theme.shadows[8],
-  },
-}));
 
 const ResourceCard = styled(Card)(({ theme }) => ({
   height: '100%',
@@ -92,7 +76,6 @@ const ResourceCard = styled(Card)(({ theme }) => ({
 
 // Centered tick animation overlay
 function CenterTickAnimation({ show }) {
-  if (show) console.log('CenterTickAnimation: show = true');
   if (!show) return null;
   return (
     <AnimatePresence>
@@ -171,7 +154,6 @@ const RoadmapView = () => {
   const [note, setNote] = useState('');
   const [selectedResourceType, setSelectedResourceType] = useState({});
   const [expandedResources, setExpandedResources] = useState({});
-  const [allRoadmaps, setAllRoadmaps] = useState([]);
   const [globalCompletedSkillIds, setGlobalCompletedSkillIds] = useState(new Set());
   const [showTickAnimation, setShowTickAnimation] = useState(false);
 
@@ -181,7 +163,7 @@ const RoadmapView = () => {
       setRoadmap(response.data);
       setLoading(false);
     } catch (error) {
-      setError('Failed to fetch roadmap');
+      setError(getApiErrorMessage(error, 'Failed to fetch roadmap.'));
       setLoading(false);
     }
   }, [id]);
@@ -195,7 +177,6 @@ const RoadmapView = () => {
     const fetchAllRoadmaps = async () => {
       try {
         const data = await getRoadmaps();
-        setAllRoadmaps(data);
         // Build set of globally completed skill IDs (excluding current roadmap)
         const completedIds = new Set();
         data.forEach(rm => {
@@ -219,7 +200,6 @@ const RoadmapView = () => {
     try {
       const skillObj = roadmap.skills.find(s => s.id === roadmapSkillId);
       if (!skillObj.completed) { // Only animate when checking
-        console.log('Triggering tick animation for skill:', roadmapSkillId);
         setShowTickAnimation(true);
         setTimeout(() => setShowTickAnimation(false), 1500);
       }
@@ -228,8 +208,7 @@ const RoadmapView = () => {
       });
       fetchRoadmap();
     } catch (error) {
-      setError('Failed to update skill status');
-      console.error('Skill completion error:', error.response ? error.response.data : error);
+      setError(getApiErrorMessage(error, 'Failed to update skill status.'));
     }
   };
 
@@ -244,7 +223,7 @@ const RoadmapView = () => {
       setOpenDialog(false);
       fetchRoadmap();
     } catch (error) {
-      setError('Failed to add note');
+      setError(getApiErrorMessage(error, 'Failed to add note.'));
     }
   };
 
@@ -253,7 +232,7 @@ const RoadmapView = () => {
       await api.delete(`/roadmaps/${id}/skills/${skillId}/notes/${noteId}/`);
       fetchRoadmap();
     } catch (error) {
-      setError('Failed to delete note');
+      setError(getApiErrorMessage(error, 'Failed to delete note.'));
     }
   };
 
@@ -317,7 +296,7 @@ const RoadmapView = () => {
       await api.post(`/roadmaps/${roadmap.id}/complete_all_skills/`);
       navigate('/dashboard');
     } catch (error) {
-      setError('Failed to mark roadmap as completed');
+      setError(getApiErrorMessage(error, 'Failed to mark roadmap as completed.'));
     }
   };
 
@@ -326,7 +305,7 @@ const RoadmapView = () => {
       await api.delete(`/roadmaps/${roadmap.id}/`);
       navigate('/dashboard');
     } catch (error) {
-      setError('Failed to delete roadmap');
+      setError(getApiErrorMessage(error, 'Failed to delete roadmap.'));
     }
   };
 
@@ -461,17 +440,17 @@ const RoadmapView = () => {
             Good news! Based on your selected skills and target, you can reach your goal in just <b>{weeklySkills.length} week{weeklySkills.length > 1 ? 's' : ''}</b>, which is less than your selected <b>{roadmap.timeline} week{roadmap.timeline > 1 ? 's' : ''}</b>.
           </Alert>
         )}
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, flexWrap: 'wrap' }}>
           <IconButton onClick={() => navigate('/dashboard')} sx={{ mr: 2 }}>
             <ArrowBack />
           </IconButton>
-          <Typography variant="h4" component="h1" sx={{ flexGrow: 1 }}>
+          <Typography variant="h4" component="h1" sx={{ flexGrow: 1, minWidth: { xs: '100%', sm: 240 }, fontSize: { xs: '1.6rem', md: '2.1rem' } }}>
             {roadmap.title}
           </Typography>
           <Button
             variant="contained"
             color="success"
-            sx={{ ml: 2 }}
+            sx={{ ml: { xs: 0, sm: 2 }, flex: { xs: 1, sm: 'unset' }, minWidth: { xs: '48%', sm: 0 } }}
             onClick={handleMarkCompleted}
           >
             Mark Completed
@@ -479,14 +458,14 @@ const RoadmapView = () => {
           <Button
             variant="contained"
             color="error"
-            sx={{ ml: 2 }}
+            sx={{ ml: { xs: 0, sm: 2 }, flex: { xs: 1, sm: 'unset' }, minWidth: { xs: '48%', sm: 0 } }}
             onClick={handleDeleteRoadmap}
           >
             Delete
           </Button>
         </Box>
 
-        <Paper elevation={3} sx={{ p: 4, mb: 4 }}>
+        <Paper elevation={3} sx={{ p: { xs: 2, sm: 4 }, mb: 4 }}>
           <Typography color="text.secondary" paragraph>
             {roadmap.description}
           </Typography>
@@ -588,17 +567,19 @@ const RoadmapView = () => {
               }}>
                 <Box sx={{
                   display: 'flex',
-                  alignItems: 'center',
+                  alignItems: { xs: 'flex-start', sm: 'center' },
+                  flexDirection: { xs: 'column', sm: 'row' },
+                  gap: { xs: 1, sm: 0 },
                   mb: 0,
-                  px: 4,
-                  pt: 3,
+                  px: { xs: 2, sm: 4 },
+                  pt: { xs: 2, sm: 3 },
                   pb: 2,
                   borderTopLeftRadius: 4,
                   borderTopRightRadius: 4,
                   background: isOverdue ? 'rgba(255,0,0,0.04)' : 'transparent',
                   borderBottom: '1px solid #e3e8ee',
                 }}>
-                  <Typography variant="h5" sx={{ mr: 2, color: isOverdue ? 'error.main' : 'primary.main', fontWeight: 800, letterSpacing: '-1px' }}>
+                  <Typography variant="h5" sx={{ mr: 2, color: isOverdue ? 'error.main' : 'primary.main', fontWeight: 800, letterSpacing: '-1px', fontSize: { xs: '1.2rem', sm: '1.5rem' } }}>
                     Week {idx + 1}
                   </Typography>
                   {roadmap.hours_per_week && (
@@ -617,13 +598,13 @@ const RoadmapView = () => {
                     href={getGoogleCalendarUrl(weekSkills, idx + 1)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    sx={{ ml: 'auto', fontWeight: 600 }}
+                    sx={{ ml: { xs: 0, sm: 'auto' }, width: { xs: '100%', sm: 'auto' }, fontWeight: 600 }}
                   >
                     Add to Google Calendar
                   </Button>
                 </Box>
                 {/* Animated week progress bar */}
-                <Box sx={{ px: 4, pt: 1, pb: 0 }}>
+                <Box sx={{ px: { xs: 2, sm: 4 }, pt: 1, pb: 0 }}>
                   <LinearProgress
                     key={weekProgress}
                     variant="determinate"
@@ -645,7 +626,7 @@ const RoadmapView = () => {
                           elevation={2}
                           sx={{
                             mb: 3,
-                            p: 3,
+                            p: { xs: 2, sm: 3 },
                             border: '1.5px solid #e3e8ee',
                             borderRadius: 4,
                             boxShadow: '0 2px 12px rgba(80,120,200,0.07)',
@@ -688,10 +669,10 @@ const RoadmapView = () => {
                               )}
                             </Typography>
                           </Box>
-                          <Typography variant="body2" color="text.secondary" sx={{ ml: 5, mb: 2, fontSize: '1.05rem', fontWeight: 400, lineHeight: 1.7, letterSpacing: 0.1 }}>
+                          <Typography variant="body2" color="text.secondary" sx={{ ml: { xs: 0, sm: 5 }, mb: 2, fontSize: '1.05rem', fontWeight: 400, lineHeight: 1.7, letterSpacing: 0.1 }}>
                             {step.skill.description}
                           </Typography>
-                          <Box sx={{ display: 'flex', gap: 2, ml: 5, flexWrap: 'wrap', mb: 1 }}>
+                          <Box sx={{ display: 'flex', gap: 2, ml: { xs: 0, sm: 5 }, flexWrap: 'wrap', mb: 1 }}>
                             <Chip
                               icon={<AccessTime sx={{ fontSize: 18, color: '#90caf9' }} />}
                               label={`${step.allocated_hours || step.skill.estimated_time} hours`}
@@ -704,7 +685,7 @@ const RoadmapView = () => {
                               sx={{ fontWeight: 500, fontSize: '0.98rem', background: '#f5f6fa', color: '#555', textTransform: 'capitalize', px: 1.5, borderRadius: 2, boxShadow: 'none' }}
                             />
                           </Box>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, ml: 5, mb: 2, flexWrap: 'wrap' }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, ml: { xs: 0, sm: 5 }, mb: 2, flexWrap: 'wrap' }}>
                             <Button
                               variant="outlined"
                               size="small"
@@ -720,7 +701,7 @@ const RoadmapView = () => {
                             )}
                           </Box>
                           {step.notes?.length > 0 && (
-                            <Box sx={{ ml: 5, mb: 2, display: 'grid', gap: 1.5 }}>
+                            <Box sx={{ ml: { xs: 0, sm: 5 }, mb: 2, display: 'grid', gap: 1.5 }}>
                               {step.notes.map((entry) => (
                                 <Paper
                                   key={entry.id}
@@ -751,7 +732,7 @@ const RoadmapView = () => {
                             </Box>
                           )}
                           <Box sx={{ mt: 3 }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1 }}>
                               <Typography variant="h6" sx={{ mr: 2, fontWeight: 700, fontSize: '1.08rem', color: '#1976d2' }}>Learning Resources</Typography>
                               <Button
                                 size="small"
@@ -772,7 +753,7 @@ const RoadmapView = () => {
                               >
                                 {isExpanded ? 'Hide Resources' : 'Show Resources'}
                               </Button>
-                              <FormControl size="small" sx={{ minWidth: 200, ml: 2 }}>
+                              <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 200 }, ml: { xs: 0, sm: 2 } }}>
                                 <InputLabel>Filter by Type</InputLabel>
                                 <Select
                                   value={selectedResourceType[step.id] || 'all'}

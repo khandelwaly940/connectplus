@@ -20,13 +20,30 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-(&#^rg2v@+jf(@a-6u%-1*44n9=r7m5e-xkcm%2fg07wa92erj'
+def _get_bool_env(name: str, default: bool = False) -> bool:
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _get_list_env(name: str, default: list[str]) -> list[str]:
+    value = os.environ.get(name)
+    if not value:
+        return default
+    return [item.strip() for item in value.split(",") if item.strip()]
+
+
+# SECURITY WARNING: keep secret key outside code in production.
+SECRET_KEY = os.environ.get("SECRET_KEY", "dev-only-insecure-secret-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = _get_bool_env("DEBUG", default=False)
 
-ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = _get_list_env(
+    "ALLOWED_HOSTS",
+    ['.onrender.com', 'localhost', '127.0.0.1']
+)
 
 
 # Application definition
@@ -79,24 +96,9 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql',
-#        'NAME': 'connectplus',
-#        'USER': 'postgres',
-#        'PASSWORD': 'root',
-#        'HOST': 'localhost',
-#        'PORT': '5433',
-#    }
-#}
-
-DATABASES = {
-       'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
-   }
-
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL')
+        default=os.environ.get('DATABASE_URL', f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
     )
 }
 
@@ -145,11 +147,14 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS settings
-CORS_ALLOW_ALL_ORIGINS = True  # Only for development
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "https://khandelwaly940.github.io",
-]
+CORS_ALLOW_ALL_ORIGINS = _get_bool_env("CORS_ALLOW_ALL_ORIGINS", default=False)
+CORS_ALLOWED_ORIGINS = _get_list_env(
+    "CORS_ALLOWED_ORIGINS",
+    [
+        "http://localhost:3000",
+        "https://khandelwaly940.github.io",
+    ],
+)
 
 # REST Framework settings
 REST_FRAMEWORK = {

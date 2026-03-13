@@ -2,14 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  Container,
-  Paper,
   TextField,
   Button,
   Typography,
   Box,
   Link as MuiLink,
-  useMediaQuery,
   Alert,
   CircularProgress,
   Snackbar,
@@ -17,6 +14,7 @@ import {
 import { styled, useTheme } from '@mui/material/styles';
 import { loginStart, loginSuccess, loginFailure } from '../store/slices/authSlice';
 import { login } from '../services/api';
+import { getApiErrorMessage } from '../utils/apiError';
 
 const LogoText = styled('span')(({ theme }) => ({
   fontWeight: 700,
@@ -43,6 +41,10 @@ const StyledContainer = styled(Box)(({ theme }) => ({
   width: '100%',
   maxWidth: 700,
   backgroundColor: '#fff',
+  [theme.breakpoints.down('md')]: {
+    flexDirection: 'column-reverse',
+    maxWidth: 460,
+  },
 }));
 
 const FormSection = styled(Box)(({ theme }) => ({
@@ -51,6 +53,9 @@ const FormSection = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(3),
+  },
 }));
 
 const WelcomeSection = styled(Box)(({ theme }) => ({
@@ -65,6 +70,13 @@ const WelcomeSection = styled(Box)(({ theme }) => ({
   backgroundImage: `linear-gradient(to bottom right, ${theme.palette.primary.light}, ${theme.palette.primary.main})`,
   borderTopLeftRadius: 24,
   borderBottomLeftRadius: 24,
+  [theme.breakpoints.down('md')]: {
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
+    borderTopRightRadius: 24,
+    borderBottomRightRadius: 24,
+    padding: theme.spacing(3),
+  },
 }));
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
@@ -100,7 +112,6 @@ const Login = () => {
   });
   const [success, setSuccess] = useState(false);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const error = useSelector((state) => state.auth.error);
   const loading = useSelector((state) => state.auth.loading);
 
@@ -123,7 +134,7 @@ const Login = () => {
         navigate('/');
       }, 1200);
     } catch (error) {
-      dispatch(loginFailure(error.response?.data?.message || 'Login failed, check username or password.'));
+      dispatch(loginFailure(getApiErrorMessage(error, 'Login failed, check username or password.')));
     }
   };
 
@@ -161,7 +172,7 @@ const Login = () => {
               onChange={handleChange}
               required
             />
-            <Box sx={{ textAlign: 'right', mb: 3 }}>
+            <Box sx={{ textAlign: 'right', mb: 3, display: { xs: 'none', md: 'block' } }}>
               <MuiLink href="#" variant="body2" sx={{ textDecoration: 'none', color: theme.palette.text.secondary }}>
                 Forgot Password?
               </MuiLink>
