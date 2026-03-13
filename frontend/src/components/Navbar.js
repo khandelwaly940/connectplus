@@ -9,10 +9,11 @@ import {
   Avatar,
   Tooltip,
   AppBar,
+  Chip,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { logout } from '../store/slices/authSlice';
+import { exitGuestMode, logout } from '../store/slices/authSlice';
 
 const LogoText = styled('span')(({ theme }) => ({
   fontWeight: 800,
@@ -24,11 +25,15 @@ const LogoText = styled('span')(({ theme }) => ({
 const Navbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const { isAuthenticated, user, mode } = useSelector((state) => state.auth);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleLogout = () => {
-    dispatch(logout());
+    if (mode === 'guest') {
+      dispatch(exitGuestMode());
+    } else {
+      dispatch(logout());
+    }
     navigate('/');
     handleCloseMenu();
   };
@@ -55,19 +60,22 @@ const Navbar = () => {
       <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 2, sm: 4 } }}>
         <LogoText onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>Connect+</LogoText>
         {isAuthenticated && (
-          <Tooltip title="Account settings">
-            <IconButton
-              onClick={handleOpenMenu}
-              size="small"
-              sx={{ ml: 2 }}
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-            >
-              <Avatar sx={{ width: 40, height: 40 }}>
-                {user?.username?.[0]?.toUpperCase() || <AccountCircleIcon />}
-              </Avatar>
-            </IconButton>
-          </Tooltip>
+          <>
+            {mode === 'guest' && <Chip label="Guest Mode" color="warning" size="small" sx={{ mr: 1 }} />}
+            <Tooltip title="Account settings">
+              <IconButton
+                onClick={handleOpenMenu}
+                size="small"
+                sx={{ ml: 2 }}
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+              >
+                <Avatar sx={{ width: 40, height: 40 }}>
+                  {user?.username?.[0]?.toUpperCase() || <AccountCircleIcon />}
+                </Avatar>
+              </IconButton>
+            </Tooltip>
+          </>
         )}
         <Menu
           id="menu-appbar"
@@ -78,9 +86,9 @@ const Navbar = () => {
           open={Boolean(anchorEl)}
           onClose={handleCloseMenu}
         >
-          <MenuItem onClick={() => { navigate('/profile'); handleCloseMenu(); }}>Profile</MenuItem>
-          
-          <MenuItem onClick={handleLogout}>Logout</MenuItem>
+          {mode !== 'guest' && <MenuItem onClick={() => { navigate('/profile'); handleCloseMenu(); }}>Profile</MenuItem>}
+          <MenuItem onClick={() => { navigate('/settings'); handleCloseMenu(); }}>Settings</MenuItem>
+          <MenuItem onClick={handleLogout}>{mode === 'guest' ? 'Exit Guest Mode' : 'Logout'}</MenuItem>
         </Menu>
       </Toolbar>
     </AppBar>

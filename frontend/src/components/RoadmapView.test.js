@@ -1,7 +1,9 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { Provider } from 'react-redux';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import RoadmapView from './RoadmapView';
 import { api, getRoadmaps } from '../services/api';
+import { store } from '../store';
 
 jest.mock('./Navbar', () => () => <div>navbar</div>);
 jest.mock('../services/api', () => ({
@@ -55,11 +57,13 @@ describe('RoadmapView', () => {
 
   test('opens note dialog from Add Note action', async () => {
     render(
-      <MemoryRouter initialEntries={['/roadmap/1']}>
-        <Routes>
-          <Route path="/roadmap/:id" element={<RoadmapView />} />
-        </Routes>
-      </MemoryRouter>
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/roadmap/1']}>
+          <Routes>
+            <Route path="/roadmap/:id" element={<RoadmapView />} />
+          </Routes>
+        </MemoryRouter>
+      </Provider>
     );
 
     await waitFor(() => {

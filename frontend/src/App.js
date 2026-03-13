@@ -13,7 +13,7 @@ import RoadmapView from './components/RoadmapView';
 import PrivateRoute from './components/PrivateRoute';
 import Profile from './components/Profile';
 import Settings from './components/Settings';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { getCurrentUser } from './services/api';
 import { loginStart, setUser, logout } from './store/slices/authSlice';
 
@@ -78,6 +78,11 @@ function AppContent() {
   const dispatch = useDispatch();
   const { token, isAuthenticated, user } = useSelector((state) => state.auth);
   const location = useLocation();
+  const reduceMotion = useReducedMotion();
+
+  const pageMotion = reduceMotion
+    ? { initial: { opacity: 1 }, animate: { opacity: 1 }, exit: { opacity: 1 }, transition: { duration: 0 } }
+    : { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.2 } };
 
   useEffect(() => {
     if (!token || user) {
@@ -110,7 +115,7 @@ function AppContent() {
         <Route 
           path="/" 
           element={
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div {...pageMotion}>
               {isAuthenticated ? <Navigate to="/dashboard" replace /> : <LandingPage />}
             </motion.div>
           }
@@ -118,7 +123,7 @@ function AppContent() {
         <Route 
           path="/login" 
           element={
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div {...pageMotion}>
               {isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />}
             </motion.div>
           }
@@ -126,7 +131,7 @@ function AppContent() {
         <Route 
           path="/register" 
           element={
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div {...pageMotion}>
               {isAuthenticated ? <Navigate to="/dashboard" replace /> : <Register />}
             </motion.div>
           }
@@ -134,7 +139,7 @@ function AppContent() {
         <Route
           path="/dashboard"
           element={
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div {...pageMotion}>
               <PrivateRoute>
                 <Dashboard />
               </PrivateRoute>
@@ -144,7 +149,7 @@ function AppContent() {
         <Route
           path="/create"
           element={
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div {...pageMotion}>
               <PrivateRoute>
                 <RoadmapCreator />
               </PrivateRoute>
@@ -154,7 +159,7 @@ function AppContent() {
         <Route
           path="/roadmap/:id"
           element={
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div {...pageMotion}>
               <PrivateRoute>
                 <RoadmapView />
               </PrivateRoute>
@@ -164,7 +169,7 @@ function AppContent() {
         <Route
           path="/profile"
           element={
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div {...pageMotion}>
               <PrivateRoute>
                 <Profile />
               </PrivateRoute>
@@ -174,7 +179,7 @@ function AppContent() {
         <Route
           path="/settings"
           element={
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div {...pageMotion}>
               <PrivateRoute>
                 <Settings />
               </PrivateRoute>

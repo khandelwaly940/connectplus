@@ -374,7 +374,7 @@ const Register = () => {
         }}
       >
         <Typography variant="body2">
-          © 2025 Connect+ All Rights Reserved.
+          © 2026 Connect+ All Rights Reserved.
         </Typography>
       </Box>
     </PageBackground>

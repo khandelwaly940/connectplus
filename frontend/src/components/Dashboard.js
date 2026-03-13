@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import {
   Container,
   Grid,
@@ -17,6 +18,7 @@ import {
   Tooltip,
   ToggleButton,
   ToggleButtonGroup,
+  Alert,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
@@ -26,6 +28,7 @@ import SchoolIcon from '@mui/icons-material/School';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { getRoadmaps } from '../services/api';
 import Navbar from './Navbar';
+import { getGuestRoadmaps, hasGuestRoadmap } from '../utils/guestRoadmap';
 
 const StatCard = styled(Card)(({ theme }) => ({
   height: '100%',
@@ -51,6 +54,8 @@ const RoadmapCard = styled(Card)(({ theme }) => ({
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { mode } = useSelector((state) => state.auth);
+  const isGuest = mode === 'guest';
   const [roadmaps, setRoadmaps] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -66,11 +71,11 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchRoadmaps();
-  }, []);
+  }, [mode]);
 
   const fetchRoadmaps = async () => {
     try {
-      const data = await getRoadmaps();
+      const data = isGuest ? getGuestRoadmaps() : await getRoadmaps();
       setRoadmaps(data);
       calculateStats(data);
       setLoading(false);
@@ -196,7 +201,7 @@ const Dashboard = () => {
               Dashboard
             </Typography>
             <Typography variant="subtitle1" color="text.secondary">
-              Track your progress and manage your learning journey
+              {isGuest ? 'Guest mode: local roadmap only, saved in this browser' : 'Track your progress and manage your learning journey'}
             </Typography>
           </Box>
           <Button
@@ -206,9 +211,14 @@ const Dashboard = () => {
             startIcon={<AddIcon />}
             onClick={() => navigate('/create')}
           >
-            Create New Roadmap
+            {isGuest ? (hasGuestRoadmap() ? 'Manage Guest Roadmap' : 'Create Guest Roadmap') : 'Create New Roadmap'}
           </Button>
         </Box>
+        {isGuest && (
+          <Alert severity="warning" icon={false} sx={{ mb: 3, borderRadius: 2 }}>
+            Guest mode supports one roadmap with 2-3 skills and uses frontend-only storage.
+          </Alert>
+        )}
         <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
           <ToggleButtonGroup
             value={view}
@@ -406,7 +416,9 @@ const Dashboard = () => {
                   No active roadmaps
                 </Typography>
                 <Typography color="text.secondary" paragraph>
-                  Start your learning journey by creating a new roadmap
+                  {isGuest
+                    ? 'Create one guest roadmap. It will be stored only on this browser.'
+                    : 'Start your learning journey by creating a new roadmap'}
                 </Typography>
                 <Button
                   variant="contained"
@@ -414,7 +426,7 @@ const Dashboard = () => {
                   startIcon={<AddIcon />}
                   onClick={() => navigate('/create')}
                 >
-                  Create Your First Roadmap
+                  {isGuest ? 'Create Guest Roadmap' : 'Create Your First Roadmap'}
                 </Button>
               </Card>
             ) : (

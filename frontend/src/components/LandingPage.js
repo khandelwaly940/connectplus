@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import {
   AppBar,
   Toolbar,
@@ -14,6 +15,11 @@ import {
   List,
   ListItemButton,
   ListItemText,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Alert,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
@@ -36,6 +42,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MenuIcon from '@mui/icons-material/Menu';
+import { continueAsGuest } from '../store/slices/authSlice';
 
 // Styled Components
 const LogoText = styled('span')(({ theme }) => ({
@@ -98,10 +105,20 @@ const HeroSubheadline = styled(Typography)(({ theme }) => ({
 
 const ActionButton = styled(Button)(({ theme }) => ({
   fontWeight: 600,
-  fontSize: '0.98rem',
+  fontSize: '0.95rem',
   borderRadius: 8,
-  padding: theme.spacing(0.7, 2.5),
+  padding: theme.spacing(0.8, 2.25),
   boxShadow: '0 2px 8px 0 rgba(33, 150, 243, 0.08)',
+  textTransform: 'none',
+  minHeight: 38,
+}));
+
+const HeaderGhostButton = styled(Button)(({ theme }) => ({
+  fontWeight: 600,
+  fontSize: '0.95rem',
+  borderRadius: 8,
+  padding: theme.spacing(0.8, 2.25),
+  minHeight: 38,
   textTransform: 'none',
 }));
 
@@ -169,7 +186,7 @@ const RoadmapDisplayContainer = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(4),
 }));
 
-const SkillChip = styled(Chip)(({ theme, skillLevel, skillTitle }) => ({
+const SkillChip = styled(Chip)(({ theme }) => ({
   padding: theme.spacing(1.5, 2),
   fontSize: '1rem',
   fontWeight: 500,
@@ -234,8 +251,10 @@ const FaqAccordionDetails = styled(AccordionDetails)(({ theme }) => ({
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const theme = useTheme();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [guestChoiceOpen, setGuestChoiceOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('Web Development');
 
   const sampleRoadmaps = {
@@ -315,6 +334,15 @@ const LandingPage = () => {
     }
   };
 
+  const openStartDialog = () => setGuestChoiceOpen(true);
+  const closeStartDialog = () => setGuestChoiceOpen(false);
+
+  const handleContinueAsGuest = () => {
+    dispatch(continueAsGuest());
+    closeStartDialog();
+    navigate('/dashboard');
+  };
+
   return (
     <PageBackground>
       {/* Header */}
@@ -334,17 +362,19 @@ const LandingPage = () => {
               e.preventDefault();
               document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' });
             }}>FAQ</NavLink>
-            <NavLink onClick={() => navigate('/login')} sx={{ ml: 4 }}>Login</NavLink>
-            <ActionButton variant="contained" color="primary" size="small" sx={{ ml: 4 }} onClick={() => navigate('/register')}>
+            <HeaderGhostButton variant="outlined" color="primary" size="small" sx={{ ml: 4 }} onClick={() => navigate('/login')}>
+              Login
+            </HeaderGhostButton>
+            <ActionButton variant="contained" color="primary" size="small" sx={{ ml: 1.5 }} onClick={openStartDialog}>
               Get Started
             </ActionButton>
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', gap: 1 }}>
-            <Button size="small" onClick={() => navigate('/login')} sx={{ textTransform: 'none', minWidth: 0, px: 1 }}>
+            <HeaderGhostButton size="small" variant="outlined" onClick={() => navigate('/login')}>
               Login
-            </Button>
-            <ActionButton variant="contained" color="primary" size="small" onClick={() => navigate('/register')}>
-              Sign Up
+            </HeaderGhostButton>
+            <ActionButton variant="contained" color="primary" size="small" onClick={openStartDialog}>
+              Get Started
             </ActionButton>
             <IconButton onClick={() => setMobileNavOpen(true)} aria-label="open menu">
               <MenuIcon />
@@ -373,6 +403,25 @@ const LandingPage = () => {
           </List>
         </Box>
       </Drawer>
+      <Dialog open={guestChoiceOpen} onClose={closeStartDialog} fullWidth maxWidth="xs">
+        <DialogTitle>Choose how to continue</DialogTitle>
+        <DialogContent>
+          <Alert severity="info" icon={false} sx={{ borderRadius: 2, mb: 2 }}>
+            Guest mode stores your progress only in this browser and does not use the backend.
+          </Alert>
+          <Typography variant="body2" color="text.secondary">
+            Guest mode supports one roadmap with a limited 2-3 skill path.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2.5, gap: 1, flexWrap: 'wrap' }}>
+          <Button variant="outlined" onClick={() => navigate('/register')} sx={{ flex: 1, minWidth: 130 }}>
+            Sign Up
+          </Button>
+          <Button variant="contained" onClick={handleContinueAsGuest} sx={{ flex: 1, minWidth: 130 }}>
+            Continue as Guest
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Hero Section */}
       <Container maxWidth="lg" sx={{ pt: { xs: 6, md: 12 }, pb: { xs: 6, md: 10 } }}>
@@ -389,9 +438,9 @@ const LandingPage = () => {
               variant="contained"
                 color="primary"
                 endIcon={<ArrowForwardIcon />}
-              onClick={() => navigate('/register')}
+              onClick={openStartDialog}
               >
-                Create Your Roadmap
+                Get Started
               </ActionButton>
               <SecondaryButton
               variant="outlined"
@@ -621,8 +670,6 @@ const LandingPage = () => {
                   <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={skill.id}>
                     <SkillChip
                       onClick={() => handleSkillClick(skill)}
-                      skillLevel={skill.level}
-                      skillTitle={skill.title}
                       sx={{
                         minHeight: 90,
                         display: 'flex',
@@ -723,7 +770,7 @@ const LandingPage = () => {
         }}
       >
         <Typography variant="body2">
-          © 2025 Connect+ All Rights Reserved.
+          © 2026 Connect+ All Rights Reserved.
         </Typography>
       </Box>
 

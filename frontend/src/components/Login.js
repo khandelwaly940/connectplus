@@ -10,9 +10,13 @@ import {
   Alert,
   CircularProgress,
   Snackbar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
-import { loginStart, loginSuccess, loginFailure } from '../store/slices/authSlice';
+import { loginStart, loginSuccess, loginFailure, continueAsGuest } from '../store/slices/authSlice';
 import { login } from '../services/api';
 import { getApiErrorMessage } from '../utils/apiError';
 
@@ -111,6 +115,7 @@ const Login = () => {
     password: '',
   });
   const [success, setSuccess] = useState(false);
+  const [forgotDialogOpen, setForgotDialogOpen] = useState(false);
   const theme = useTheme();
   const error = useSelector((state) => state.auth.error);
   const loading = useSelector((state) => state.auth.loading);
@@ -120,6 +125,11 @@ const Login = () => {
       ...formData,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const handleGuestContinue = () => {
+    dispatch(continueAsGuest());
+    navigate('/dashboard');
   };
 
   const handleSubmit = async (e) => {
@@ -172,8 +182,14 @@ const Login = () => {
               onChange={handleChange}
               required
             />
-            <Box sx={{ textAlign: 'right', mb: 3, display: { xs: 'none', md: 'block' } }}>
-              <MuiLink href="#" variant="body2" sx={{ textDecoration: 'none', color: theme.palette.text.secondary }}>
+            <Box sx={{ textAlign: 'right', mb: 3 }}>
+              <MuiLink
+                component="button"
+                type="button"
+                variant="body2"
+                onClick={() => setForgotDialogOpen(true)}
+                sx={{ textDecoration: 'none', color: theme.palette.text.secondary, border: 'none', background: 'transparent', p: 0, cursor: 'pointer' }}
+              >
                 Forgot Password?
               </MuiLink>
             </Box>
@@ -185,6 +201,9 @@ const Login = () => {
                 Free server wake-up in progress. Please wait up to a minute.
               </Typography>
             )}
+            <Button variant="text" fullWidth sx={{ mt: 1.5 }} onClick={handleGuestContinue}>
+              Continue as Guest
+            </Button>
           </form>
           <Snackbar
             open={success}
@@ -218,9 +237,21 @@ const Login = () => {
         }}
       >
         <Typography variant="body2">
-          © 2025 Connect+ All Rights Reserved.
+          © 2026 Connect+ All Rights Reserved.
         </Typography>
       </Box>
+      <Dialog open={forgotDialogOpen} onClose={() => setForgotDialogOpen(false)} fullWidth maxWidth="xs">
+        <DialogTitle>Password reset</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="text.secondary">
+            Password reset is not available yet on this demo build. Please create a new account or continue as guest.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setForgotDialogOpen(false)}>Close</Button>
+          <Button variant="contained" onClick={() => navigate('/register')}>Create Account</Button>
+        </DialogActions>
+      </Dialog>
     </PageBackground>
   );
 };

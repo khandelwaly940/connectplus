@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import {
   Container,
   Paper,
@@ -23,6 +24,7 @@ import { generateRoadmap } from '../services/api';
 import { getApiErrorMessage } from '../utils/apiError';
 import Navbar from './Navbar';
 import GeneratingOverlay from './GeneratingOverlay';
+import { createGuestRoadmap, deleteGuestRoadmap, getGuestDomainOptions, getGuestRoadmap } from '../utils/guestRoadmap';
 
 const steps = ['Basic Information', 'Domain & Levels', 'Timeline'];
 
@@ -101,6 +103,8 @@ const StyledButton = styled(Button)(({ theme }) => ({
 const RoadmapCreator = () => {
   const navigate = useNavigate();
   const theme = useTheme();
+  const { mode } = useSelector((state) => state.auth);
+  const isGuest = mode === 'guest';
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
@@ -116,6 +120,14 @@ const RoadmapCreator = () => {
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [pendingRoadmapId, setPendingRoadmapId] = useState(null);
+  const [existingGuestRoadmap, setExistingGuestRoadmap] = useState(null);
+
+  useEffect(() => {
+    if (!isGuest) {
+      return;
+    }
+    setExistingGuestRoadmap(getGuestRoadmap());
+  }, [isGuest]);
 
   const handleChange = (e) => {
     setFormData({
@@ -187,9 +199,25 @@ const RoadmapCreator = () => {
     if (!validateStep(activeStep)) {
       return;
     }
+
+    if (isGuest && existingGuestRoadmap) {
+      setError('Guest mode supports one roadmap. Open it or replace it to create another.');
+      return;
+    }
+
     setLoading(true);
     let roadmapId = null;
     try {
+      if (isGuest) {
+        const guestRoadmap = createGuestRoadmap(formData);
+        roadmapId = guestRoadmap.id;
+        setPendingRoadmapId(roadmapId);
+        setGenerating(true);
+        setExistingGuestRoadmap(guestRoadmap);
+        setLoading(false);
+        return;
+      }
+
       const response = await generateRoadmap({
         title: formData.title,
         description: formData.description,
@@ -217,6 +245,9 @@ const RoadmapCreator = () => {
     }
     // Do not navigate here; wait for overlay to finish
   };
+
+  const guestDomainOptions = getGuestDomainOptions();
+  const domainOptions = isGuest ? DOMAIN_OPTIONS.filter((option) => guestDomainOptions.includes(option.value)) : DOMAIN_OPTIONS;
 
   const getStepContent = (step) => {
     switch (step) {
@@ -257,7 +288,7 @@ const RoadmapCreator = () => {
                   onChange={handleChange}
                   label="Domain"
                 >
-                  {DOMAIN_OPTIONS.map((option) => (
+                  {domainOptions.map((option) => (
                     <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
                   ))}
                 </Select>
@@ -355,6 +386,37 @@ const RoadmapCreator = () => {
           <Typography variant="h4" component="h1" align="center" sx={{ fontWeight: 800, mb: 4, fontSize: { xs: '1.6rem', sm: '2.125rem' } }}>
             Create a New Roadmap
           </Typography>
+          {isGuest && (
+            <Alert severity="info" sx={{ mb: 3 }}>
+              Guest mode uses frontend-only data and supports one roadmap with 2-3 skills.
+            </Alert>
+          )}
+          {isGuest && existingGuestRoadmap && (
+            <Alert
+              severity="warning"
+              sx={{ mb: 3 }}
+              action={
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Button color="inherit" size="small" onClick={() => navigate(`/roadmap/${existingGuestRoadmap.id}`)}>
+                    Open
+                  </Button>
+                  <Button
+                    color="inherit"
+                    size="small"
+                    onClick={() => {
+                      deleteGuestRoadmap();
+                      setExistingGuestRoadmap(null);
+                      setError('');
+                    }}
+                  >
+                    Replace
+                  </Button>
+                </Box>
+              }
+            >
+              You already have a guest roadmap.
+            </Alert>
+          )}
           <Stepper activeStep={activeStep} sx={{ mb: 5, background: 'transparent' }} alternativeLabel={!isMobile}>
             {steps.map((label, idx) => (
               <Step key={label}>

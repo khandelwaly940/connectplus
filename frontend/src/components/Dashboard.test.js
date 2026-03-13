@@ -1,6 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import Dashboard from './Dashboard';
+import { store } from '../store';
 
 jest.mock('./Navbar', () => () => <div>navbar</div>);
 jest.mock('../services/api', () => ({
@@ -18,9 +20,11 @@ describe('Dashboard', () => {
     getRoadmaps.mockResolvedValue([]);
 
     render(
-      <MemoryRouter>
-        <Dashboard />
-      </MemoryRouter>
+      <Provider store={store}>
+        <MemoryRouter>
+          <Dashboard />
+        </MemoryRouter>
+      </Provider>
     );
 
     await waitFor(() => {

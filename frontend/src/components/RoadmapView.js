@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import {
   Container,
   Paper,
@@ -53,6 +54,7 @@ import { api, getRoadmaps } from '../services/api';
 import Navbar from './Navbar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getApiErrorMessage } from '../utils/apiError';
+import { addGuestNote, deleteGuestNote, deleteGuestRoadmap, getGuestRoadmap, markGuestRoadmapCompleted, toggleGuestSkillCompletion } from '../utils/guestRoadmap';
 
 const RESOURCE_TYPE_OPTIONS = [
   { value: 'video', label: 'Free Video' },
@@ -146,6 +148,8 @@ function CenterTickAnimation({ show }) {
 const RoadmapView = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { mode } = useSelector((state) => state.auth);
+  const isGuest = mode === 'guest';
   const [roadmap, setRoadmap] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -159,6 +163,17 @@ const RoadmapView = () => {
 
   const fetchRoadmap = useCallback(async () => {
     try {
+      if (isGuest) {
+        const guestRoadmap = getGuestRoadmap();
+        if (!guestRoadmap || String(guestRoadmap.id) !== String(id)) {
+          setRoadmap(null);
+          setLoading(false);
+          return;
+        }
+        setRoadmap(guestRoadmap);
+        setLoading(false);
+        return;
+      }
       const response = await api.get(`/roadmaps/${id}/`);
       setRoadmap(response.data);
       setLoading(false);
@@ -166,7 +181,7 @@ const RoadmapView = () => {
       setError(getApiErrorMessage(error, 'Failed to fetch roadmap.'));
       setLoading(false);
     }
-  }, [id]);
+  }, [id, isGuest]);
 
   useEffect(() => {
     fetchRoadmap();
@@ -175,6 +190,10 @@ const RoadmapView = () => {
   useEffect(() => {
     // Fetch all roadmaps for global completed skills
     const fetchAllRoadmaps = async () => {
+      if (isGuest) {
+        setGlobalCompletedSkillIds(new Set());
+        return;
+      }
       try {
         const data = await getRoadmaps();
         // Build set of globally completed skill IDs (excluding current roadmap)
@@ -194,7 +213,7 @@ const RoadmapView = () => {
       }
     };
     fetchAllRoadmaps();
-  }, [id]);
+  }, [id, isGuest]);
 
   const handleSkillComplete = async (roadmapSkillId) => {
     try {
@@ -202,6 +221,11 @@ const RoadmapView = () => {
       if (!skillObj.completed) { // Only animate when checking
         setShowTickAnimation(true);
         setTimeout(() => setShowTickAnimation(false), 1500);
+      }
+      if (isGuest) {
+        toggleGuestSkillCompletion(roadmapSkillId);
+        fetchRoadmap();
+        return;
       }
       await api.post(`/roadmaps/${roadmap.id}/complete_skill/`, {
         skill_id: roadmapSkillId
@@ -216,6 +240,13 @@ const RoadmapView = () => {
     if (!note.trim() || !selectedSkill) return;
 
     try {
+      if (isGuest) {
+        addGuestNote(selectedSkill.id, note);
+        setNote('');
+        setOpenDialog(false);
+        fetchRoadmap();
+        return;
+      }
       await api.post(`/roadmaps/${id}/skills/${selectedSkill.id}/notes/`, {
         content: note,
       });
@@ -229,6 +260,11 @@ const RoadmapView = () => {
 
   const handleDeleteNote = async (skillId, noteId) => {
     try {
+      if (isGuest) {
+        deleteGuestNote(skillId, noteId);
+        fetchRoadmap();
+        return;
+      }
       await api.delete(`/roadmaps/${id}/skills/${skillId}/notes/${noteId}/`);
       fetchRoadmap();
     } catch (error) {
@@ -269,7 +305,7 @@ const RoadmapView = () => {
   };
 
   const groupResourcesByType = (resources) => {
-    return resources.reduce((acc, resource) => {
+    return (resources || []).reduce((acc, resource) => {
       const type = resource.resource_type;
       if (!acc[type]) {
         acc[type] = [];
@@ -293,6 +329,11 @@ const RoadmapView = () => {
 
   const handleMarkCompleted = async () => {
     try {
+      if (isGuest) {
+        markGuestRoadmapCompleted();
+        navigate('/dashboard');
+        return;
+      }
       await api.post(`/roadmaps/${roadmap.id}/complete_all_skills/`);
       navigate('/dashboard');
     } catch (error) {
@@ -302,6 +343,11 @@ const RoadmapView = () => {
 
   const handleDeleteRoadmap = async () => {
     try {
+      if (isGuest) {
+        deleteGuestRoadmap();
+        navigate('/dashboard');
+        return;
+      }
       await api.delete(`/roadmaps/${roadmap.id}/`);
       navigate('/dashboard');
     } catch (error) {
@@ -430,6 +476,11 @@ const RoadmapView = () => {
       <CenterTickAnimation show={showTickAnimation} />
       <Navbar />
       <Container maxWidth="lg" sx={{ py: 4 }}>
+        {isGuest && (
+          <Alert severity="info" sx={{ mb: 3 }}>
+            Guest roadmap: progress and notes are stored only in this browser.
+          </Alert>
+        )}
         {roadmap.target_unreachable && (
           <Alert severity="warning" sx={{ mb: 3 }}>
             Warning: Based on your selected timeline and hours per week, the target level could not be reached. The roadmap covers as much as possible.
