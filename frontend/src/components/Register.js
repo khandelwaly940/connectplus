@@ -17,8 +17,8 @@ import { styled, useTheme } from '@mui/material/styles';
 import { register } from '../services/api';
 import CircularProgress from '@mui/material/CircularProgress';
 import { getApiErrorMessage } from '../utils/apiError';
+import AppFooter from './AppFooter';
 
-// Styled Components (Copied from Login.js and adapted)
 const LogoText = styled('span')(({ theme }) => ({
   fontWeight: 700,
   fontSize: '1.5rem',
@@ -28,7 +28,7 @@ const LogoText = styled('span')(({ theme }) => ({
 
 const PageBackground = styled(Box)(({ theme }) => ({
   minHeight: '100vh',
-  background: '#f0f2f5', // Match login page background
+  background: '#f7fafd',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
@@ -38,11 +38,13 @@ const PageBackground = styled(Box)(({ theme }) => ({
 
 const StyledContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
-  borderRadius: 24, // Match login page container
-  boxShadow: '0 15px 50px rgba(0,0,0,0.15)', // Match login page container
+  borderRadius: 18,
+  border: '1px solid',
+  borderColor: theme.palette.divider,
+  boxShadow: 'none',
   overflow: 'hidden',
   width: '100%',
-  maxWidth: 700, // Match login page container
+  maxWidth: 700,
   backgroundColor: '#fff',
   [theme.breakpoints.down('md')]: {
     flexDirection: 'column-reverse',
@@ -51,8 +53,8 @@ const StyledContainer = styled(Box)(({ theme }) => ({
 }));
 
 const FormSection = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(6), // Match login page form section
-  flex: '3', // Match login page form section proportion
+  padding: theme.spacing(5),
+  flex: '3',
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
@@ -62,48 +64,41 @@ const FormSection = styled(Box)(({ theme }) => ({
 }));
 
 const WelcomeSection = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(6), // Match login page welcome section
-  flex: '2', // Match login page welcome section proportion
+  padding: theme.spacing(5),
+  flex: '2',
   color: theme.palette.common.white,
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
   textAlign: 'center',
-  backgroundImage: `linear-gradient(to bottom right, ${theme.palette.primary.light}, ${theme.palette.primary.main})`,
-  borderTopLeftRadius: 24,
-  borderBottomLeftRadius: 24,
+  backgroundImage: `linear-gradient(160deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
+  borderTopLeftRadius: 18,
+  borderBottomLeftRadius: 18,
   [theme.breakpoints.down('md')]: {
     borderTopLeftRadius: 0,
     borderBottomLeftRadius: 0,
-    borderTopRightRadius: 24,
-    borderBottomRightRadius: 24,
+    borderTopRightRadius: 18,
+    borderBottomRightRadius: 18,
     padding: theme.spacing(3),
   },
 }));
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
-  marginBottom: theme.spacing(3), // Match login page text field
+  marginBottom: theme.spacing(3),
   '& .MuiOutlinedInput-root': {
-    borderRadius: 8, // Match login page text field
-    backgroundColor: theme.palette.grey[100], // Match login page text field
-    '& fieldset': { border: 'none' },
+    borderRadius: 10,
+    backgroundColor: '#fff',
   },
 }));
 
 const StyledButton = styled(Button)(({ theme }) => ({
-  fontWeight: 600, // Match login page button
-  fontSize: '1rem', // Match login page button
-  borderRadius: 8, // Match login page button
-  padding: theme.spacing(1.5, 4), // Match login page button
-  textTransform: 'uppercase', // Match login page button
+  fontWeight: 700,
+  fontSize: '0.96rem',
+  borderRadius: 10,
+  padding: theme.spacing(1.25, 3),
+  textTransform: 'none',
   boxShadow: 'none',
-}));
-
-const HostingNotice = styled(Alert)(({ theme }) => ({
-  marginBottom: theme.spacing(3),
-  borderRadius: 12,
-  alignItems: 'flex-start',
 }));
 
 const steps = ['Account Information', 'Personal Details', 'Learning Goals'];
@@ -195,35 +190,35 @@ const Register = () => {
       case 0:
         return (
           <>
-            <StyledTextField // Using styled text field
+            <StyledTextField
               fullWidth
-              label="Username " // Added asterisk
+              label="Username "
               name="username"
               value={formData.username}
               onChange={handleChange}
               required
             />
-            <StyledTextField // Using styled text field
+            <StyledTextField
               fullWidth
-              label="Email " // Added asterisk
+              label="Email "
               name="email"
               type="email"
               value={formData.email}
               onChange={handleChange}
               required
             />
-            <StyledTextField // Using styled text field
+            <StyledTextField
               fullWidth
-              label="Password " // Added asterisk
+              label="Password "
               name="password"
               type="password"
               value={formData.password}
               onChange={handleChange}
               required
             />
-            <StyledTextField // Using styled text field
+            <StyledTextField
               fullWidth
-              label="Confirm Password " // Added asterisk
+              label="Confirm Password "
               name="confirmPassword"
               type="password"
               value={formData.confirmPassword}
@@ -235,17 +230,17 @@ const Register = () => {
       case 1:
         return (
           <>
-            <StyledTextField // Using styled text field
+            <StyledTextField
               fullWidth
-              label="First Name " // Added asterisk
+              label="First Name "
               name="firstName"
               value={formData.firstName}
               onChange={handleChange}
               required
             />
-            <StyledTextField // Using styled text field
+            <StyledTextField
               fullWidth
-              label="Last Name " // Added asterisk
+              label="Last Name "
               name="lastName"
               value={formData.lastName}
               onChange={handleChange}
@@ -256,9 +251,9 @@ const Register = () => {
       case 2:
         return (
           <>
-            <StyledTextField // Using styled text field
+            <StyledTextField
               fullWidth
-              label="Learning Goals " // Added asterisk
+              label="Learning Goals "
               name="learningGoals"
               multiline
               rows={4}
@@ -267,7 +262,7 @@ const Register = () => {
               required
               helperText="Describe what you want to achieve"
             />
-            <StyledTextField // Using styled text field
+            <StyledTextField
               fullWidth
               label="Experience Level "
               name="experienceLevel"
@@ -292,16 +287,12 @@ const Register = () => {
     <PageBackground>
       <StyledContainer>
         <FormSection>
-          {/* Add clickable LogoText */}
           <Box sx={{ mb: 4 }} onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
             <LogoText>Connect+</LogoText>
           </Box>
-          <Typography variant="h5" component="h1" gutterBottom>
+          <Typography variant="h5" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
             Create Your Account
           </Typography>
-          <HostingNotice severity="info" icon={false}>
-            This project runs on free hosting. Signup can take up to 60 seconds while the server wakes up.
-          </HostingNotice>
           <Stepper activeStep={activeStep} sx={{ mb: 4 }} alternativeLabel={!isMobile}>
             {steps.map((label) => (
               <Step key={label}>
@@ -337,7 +328,7 @@ const Register = () => {
             </Box>
             {loading && (
               <Typography variant="body2" color="text.secondary" sx={{ mt: 2, textAlign: 'center' }}>
-                Free server wake-up in progress. Please wait up to a minute.
+                Server wake up in progress, please wait.
               </Typography>
             )}
           </form>
@@ -356,27 +347,13 @@ const Register = () => {
           <Typography variant="body1" sx={{ mb: 4, fontSize: '1rem' }}>
             Already have an account?
           </Typography>
-          <StyledButton variant="outlined" sx={{ color: 'white', borderColor: 'white' }} onClick={() => navigate('/login')}>
+          <StyledButton variant="outlined" sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.8)' }} onClick={() => navigate('/login')}>
             SIGN IN
           </StyledButton>
         </WelcomeSection>
       </StyledContainer>
 
-      {/* Footer */}
-      <Box
-        component="footer"
-        sx={{
-          py: 3,
-          textAlign: 'center',
-          mt: 4,
-          color: theme.palette.text.secondary,
-          fontSize: '0.9rem',
-        }}
-      >
-        <Typography variant="body2">
-          © 2026 Connect+ All Rights Reserved.
-        </Typography>
-      </Box>
+      <AppFooter mt={2.5} compact maxWidth="sm" />
     </PageBackground>
   );
 };

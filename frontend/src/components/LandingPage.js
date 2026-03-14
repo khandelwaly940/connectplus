@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import {
@@ -43,6 +43,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MenuIcon from '@mui/icons-material/Menu';
 import { continueAsGuest } from '../store/slices/authSlice';
+import AppFooter from './AppFooter';
 
 // Styled Components
 const LogoText = styled('span')(({ theme }) => ({
@@ -71,7 +72,7 @@ const HeroImage = styled('img')(({ theme }) => ({
   width: '100%',
   maxWidth: 480,
   borderRadius: theme.spacing(2),
-  boxShadow: '0 4px 32px 0 rgba(80, 120, 200, 0.10)',
+  boxShadow: '0 8px 24px rgba(15, 23, 42, 0.08)',
   display: 'block',
   margin: '0 auto',
 }));
@@ -163,26 +164,28 @@ const FeatureIconCircle = styled(Box)(({ theme }) => ({
 const FeatureCard = styled(Box)(({ theme }) => ({
   background: '#fff',
   borderRadius: 16,
-  boxShadow: '0 2px 12px 0 rgba(80,120,200,0.06)',
+  boxShadow: 'none',
+  border: '1px solid',
+  borderColor: theme.palette.divider,
   padding: theme.spacing(4),
-  minHeight: 200,
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'flex-start',
   justifyContent: 'flex-start',
-  transition: 'transform 0.18s cubic-bezier(.4,2,.6,1), box-shadow 0.18s cubic-bezier(.4,2,.6,1)',
-  willChange: 'transform, box-shadow',
+  transition: 'transform 0.18s ease, box-shadow 0.18s ease',
   '&:hover': {
-    transform: 'translateY(-8px) scale(1.03)',
-    boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.10)',
+    transform: 'translateY(-2px)',
+    boxShadow: '0 8px 20px rgba(15, 23, 42, 0.06)',
   },
 }));
 
 const RoadmapDisplayContainer = styled(Box)(({ theme }) => ({
   background: '#fff',
   borderRadius: 16,
-  boxShadow: '0 2px 12px 0 rgba(80,120,200,0.06)',
-  padding: theme.spacing(2),
+  boxShadow: 'none',
+  border: '1px solid',
+  borderColor: theme.palette.divider,
+  padding: theme.spacing(2.5),
   marginTop: theme.spacing(4),
 }));
 
@@ -207,22 +210,26 @@ const SkillChip = styled(Chip)(({ theme }) => ({
     boxShadow: 'none',
     backgroundColor: theme.palette.grey[200],
   },
-  boxShadow: '0 2px 12px 0 rgba(80,120,200,0.06)',
-  padding: theme.spacing(4),
-  marginTop: theme.spacing(4),
+  boxShadow: 'none',
+  padding: theme.spacing(2.5),
+  marginTop: theme.spacing(2),
 }));
 
 const SkillDetailCard = styled(Box)(({ theme }) => ({
   background: '#fff',
   borderRadius: 16,
-  boxShadow: '0 2px 12px 0 rgba(80,120,200,0.06)',
+  boxShadow: 'none',
+  border: '1px solid',
+  borderColor: theme.palette.divider,
   padding: theme.spacing(4),
   marginTop: theme.spacing(4),
 }));
 
 const FaqAccordion = styled(Accordion)(({ theme }) => ({
   background: theme.palette.common.white,
-  boxShadow: '0 1px 8px 0 rgba(80,120,200,0.04)',
+  boxShadow: 'none',
+  border: '1px solid',
+  borderColor: theme.palette.divider,
   borderRadius: 8,
   marginBottom: theme.spacing(1.5),
   '&:before': {
@@ -230,7 +237,7 @@ const FaqAccordion = styled(Accordion)(({ theme }) => ({
   },
   '&.Mui-expanded': {
     margin: theme.spacing(1.5, 0),
-    boxShadow: '0 4px 16px 0 rgba(80,120,200,0.08)',
+    borderColor: theme.palette.primary.light,
   },
 }));
 
@@ -256,6 +263,8 @@ const LandingPage = () => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [guestChoiceOpen, setGuestChoiceOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('Web Development');
+  const featureCardRefs = useRef([]);
+  const [uniformFeatureCardHeight, setUniformFeatureCardHeight] = useState(null);
 
   const sampleRoadmaps = {
     'Web Development': {
@@ -343,10 +352,30 @@ const LandingPage = () => {
     navigate('/dashboard');
   };
 
+  useEffect(() => {
+    const syncFeatureCardHeights = () => {
+      const heights = featureCardRefs.current
+        .map((node) => (node ? node.offsetHeight : 0))
+        .filter(Boolean);
+
+      if (heights.length > 0) {
+        setUniformFeatureCardHeight(Math.max(...heights));
+      }
+    };
+
+    const id = window.requestAnimationFrame(syncFeatureCardHeights);
+    window.addEventListener('resize', syncFeatureCardHeights);
+
+    return () => {
+      window.cancelAnimationFrame(id);
+      window.removeEventListener('resize', syncFeatureCardHeights);
+    };
+  }, []);
+
   return (
     <PageBackground>
       {/* Header */}
-      <AppBar position="sticky" elevation={0} sx={{ background: '#f7fafd', boxShadow: 'none', py: 0.25, minHeight: 48 }}>
+      <AppBar position="sticky" elevation={0} sx={{ background: 'rgba(247, 250, 253, 0.88)', boxShadow: '0 1px 0 rgba(15,23,42,0.08)', backdropFilter: 'blur(8px)', py: 0.25, minHeight: 48 }}>
         <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 0.5, sm: 2 }, minHeight: 40 }}>
           <LogoText onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>Connect+</LogoText>
           <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
@@ -406,9 +435,6 @@ const LandingPage = () => {
       <Dialog open={guestChoiceOpen} onClose={closeStartDialog} fullWidth maxWidth="xs">
         <DialogTitle>Choose how to continue</DialogTitle>
         <DialogContent>
-          <Alert severity="info" icon={false} sx={{ borderRadius: 2, mb: 2 }}>
-            Guest mode stores your progress only in this browser and does not use the backend.
-          </Alert>
           <Typography variant="body2" color="text.secondary">
             Guest mode supports one roadmap with a limited 2-3 skill path.
           </Typography>
@@ -425,7 +451,7 @@ const LandingPage = () => {
 
       {/* Hero Section */}
       <Container maxWidth="lg" sx={{ pt: { xs: 6, md: 12 }, pb: { xs: 6, md: 10 } }}>
-        <Grid container spacing={6} alignItems="center">
+        <Grid container spacing={{ xs: 4, md: 6 }} alignItems="center">
           <Grid size={{ xs: 12, md: 6 }}>
             <HeroHeadline component="h1">
               Build Your <Highlight>Skills Roadmap</Highlight><br />With Precision
@@ -467,10 +493,10 @@ const LandingPage = () => {
           variant="h3" 
           align="center" 
           gutterBottom 
-          sx={{ 
+          sx={{
             mb: 2,
             fontWeight: 800,
-            color: '#111',
+            color: 'text.primary',
             letterSpacing: '-0.5px',
           }}
         >
@@ -509,15 +535,20 @@ const LandingPage = () => {
             },
             {
               icon: <AccessTimeIcon fontSize="inherit" />,
-              title: 'Week wise time based learning',
+              title: 'Weekly Time Planning',
               desc: 'Structure your roadmap into manageable weekly blocks based on your time availability.'
             }
           ].map((f, idx) => (
-            <Grid key={idx} size={{ xs: 12, sm: 6, md: 4 }}>
-              <FeatureCard>
+            <Grid key={idx} size={{ xs: 12, sm: 6, md: 4 }} sx={{ display: 'flex' }}>
+              <FeatureCard
+                ref={(el) => {
+                  featureCardRefs.current[idx] = el;
+                }}
+                sx={{ height: uniformFeatureCardHeight || 'auto', width: '100%' }}
+              >
                 <FeatureIconCircle>{f.icon}</FeatureIconCircle>
-                <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>{f.title}</Typography>
-                <Typography sx={{ color: '#444', fontSize: '1rem' }}>{f.desc}</Typography>
+                <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, lineHeight: 1.25 }}>{f.title}</Typography>
+                <Typography sx={{ color: 'text.secondary', fontSize: '0.98rem', lineHeight: 1.45 }}>{f.desc}</Typography>
               </FeatureCard>
             </Grid>
           ))}
@@ -533,7 +564,7 @@ const LandingPage = () => {
           sx={{
             mb: 2,
             fontWeight: 800,
-            color: '#111',
+            color: 'text.primary',
             letterSpacing: '-0.5px',
           }}
         >
@@ -728,7 +759,7 @@ const LandingPage = () => {
           sx={{
             mb: 2,
             fontWeight: 800,
-            color: '#111',
+            color: 'text.primary',
             letterSpacing: '-0.5px',
           }}
         >
@@ -757,22 +788,7 @@ const LandingPage = () => {
 
       </Container>
 
-      {/* Footer */}
-      <Box
-        component="footer"
-        sx={{
-          py: 3,
-          textAlign: 'center',
-          mt: 8,
-          color: theme.palette.common.white,
-          backgroundColor: theme.palette.grey[800],
-          fontSize: '0.9rem',
-        }}
-      >
-        <Typography variant="body2">
-          © 2026 Connect+ All Rights Reserved.
-        </Typography>
-      </Box>
+      <AppFooter mt={8} />
 
     </PageBackground>
   );

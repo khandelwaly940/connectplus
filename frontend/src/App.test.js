@@ -10,7 +10,6 @@ jest.mock('./components/Dashboard', () => () => <div>dashboard-page</div>);
 jest.mock('./components/RoadmapCreator', () => () => <div>roadmap-creator-page</div>);
 jest.mock('./components/RoadmapView', () => () => <div>roadmap-view-page</div>);
 jest.mock('./components/Profile', () => () => <div>profile-page</div>);
-jest.mock('./components/Settings', () => () => <div>settings-page</div>);
 jest.mock('./services/api', () => ({
   getCurrentUser: jest.fn(),
 }));

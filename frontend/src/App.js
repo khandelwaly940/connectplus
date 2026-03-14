@@ -12,7 +12,6 @@ import RoadmapCreator from './components/RoadmapCreator';
 import RoadmapView from './components/RoadmapView';
 import PrivateRoute from './components/PrivateRoute';
 import Profile from './components/Profile';
-import Settings from './components/Settings';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { getCurrentUser } from './services/api';
 import { loginStart, setUser, logout } from './store/slices/authSlice';
@@ -172,16 +171,6 @@ function AppContent() {
             <motion.div {...pageMotion}>
               <PrivateRoute>
                 <Profile />
-              </PrivateRoute>
-            </motion.div>
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <motion.div {...pageMotion}>
-              <PrivateRoute>
-                <Settings />
               </PrivateRoute>
             </motion.div>
           }

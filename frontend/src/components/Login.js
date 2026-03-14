@@ -6,19 +6,15 @@ import {
   Button,
   Typography,
   Box,
-  Link as MuiLink,
   Alert,
   CircularProgress,
   Snackbar,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
 } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { loginStart, loginSuccess, loginFailure, continueAsGuest } from '../store/slices/authSlice';
 import { login } from '../services/api';
 import { getApiErrorMessage } from '../utils/apiError';
+import AppFooter from './AppFooter';
 
 const LogoText = styled('span')(({ theme }) => ({
   fontWeight: 700,
@@ -29,7 +25,7 @@ const LogoText = styled('span')(({ theme }) => ({
 
 const PageBackground = styled(Box)(({ theme }) => ({
   minHeight: '100vh',
-  background: '#f0f2f5',
+  background: '#f7fafd',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
@@ -39,8 +35,10 @@ const PageBackground = styled(Box)(({ theme }) => ({
 
 const StyledContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
-  borderRadius: 24,
-  boxShadow: '0 15px 50px rgba(0,0,0,0.15)',
+  borderRadius: 18,
+  border: '1px solid',
+  borderColor: theme.palette.divider,
+  boxShadow: 'none',
   overflow: 'hidden',
   width: '100%',
   maxWidth: 700,
@@ -52,7 +50,7 @@ const StyledContainer = styled(Box)(({ theme }) => ({
 }));
 
 const FormSection = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(6),
+  padding: theme.spacing(5),
   flex: '3',
   display: 'flex',
   flexDirection: 'column',
@@ -63,7 +61,7 @@ const FormSection = styled(Box)(({ theme }) => ({
 }));
 
 const WelcomeSection = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(6),
+  padding: theme.spacing(5),
   flex: '2',
   color: theme.palette.common.white,
   display: 'flex',
@@ -71,14 +69,14 @@ const WelcomeSection = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'center',
   textAlign: 'center',
-  backgroundImage: `linear-gradient(to bottom right, ${theme.palette.primary.light}, ${theme.palette.primary.main})`,
-  borderTopLeftRadius: 24,
-  borderBottomLeftRadius: 24,
+  backgroundImage: `linear-gradient(160deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
+  borderTopLeftRadius: 18,
+  borderBottomLeftRadius: 18,
   [theme.breakpoints.down('md')]: {
     borderTopLeftRadius: 0,
     borderBottomLeftRadius: 0,
-    borderTopRightRadius: 24,
-    borderBottomRightRadius: 24,
+    borderTopRightRadius: 18,
+    borderBottomRightRadius: 18,
     padding: theme.spacing(3),
   },
 }));
@@ -86,37 +84,29 @@ const WelcomeSection = styled(Box)(({ theme }) => ({
 const StyledTextField = styled(TextField)(({ theme }) => ({
   marginBottom: theme.spacing(3),
   '& .MuiOutlinedInput-root': {
-    borderRadius: 8,
-    backgroundColor: theme.palette.grey[100],
-    '& fieldset': { border: 'none' },
+    borderRadius: 10,
+    backgroundColor: '#fff',
   },
 }));
 
 const StyledButton = styled(Button)(({ theme }) => ({
-  fontWeight: 600,
-  fontSize: '1rem',
-  borderRadius: 8,
-  padding: theme.spacing(1.5, 4),
-  textTransform: 'uppercase',
+  fontWeight: 700,
+  fontSize: '0.96rem',
+  borderRadius: 10,
+  padding: theme.spacing(1.25, 3),
+  textTransform: 'none',
   boxShadow: 'none',
-}));
-
-const HostingNotice = styled(Alert)(({ theme }) => ({
-  marginBottom: theme.spacing(3),
-  borderRadius: 12,
-  alignItems: 'flex-start',
 }));
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const theme = useTheme();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
   });
   const [success, setSuccess] = useState(false);
-  const [forgotDialogOpen, setForgotDialogOpen] = useState(false);
-  const theme = useTheme();
   const error = useSelector((state) => state.auth.error);
   const loading = useSelector((state) => state.auth.loading);
 
@@ -155,12 +145,9 @@ const Login = () => {
           <Box sx={{ mb: 4 }} onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
             <LogoText>Connect+</LogoText>
           </Box>
-          <Typography variant="h5" component="h1" gutterBottom>
+          <Typography variant="h5" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
             Sign In
           </Typography>
-          <HostingNotice severity="info" icon={false}>
-            This project runs on free hosting. Login can take up to 60 seconds while the server wakes up.
-          </HostingNotice>
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
           )}
@@ -182,23 +169,12 @@ const Login = () => {
               onChange={handleChange}
               required
             />
-            <Box sx={{ textAlign: 'right', mb: 3 }}>
-              <MuiLink
-                component="button"
-                type="button"
-                variant="body2"
-                onClick={() => setForgotDialogOpen(true)}
-                sx={{ textDecoration: 'none', color: theme.palette.text.secondary, border: 'none', background: 'transparent', p: 0, cursor: 'pointer' }}
-              >
-                Forgot Password?
-              </MuiLink>
-            </Box>
             <StyledButton type="submit" fullWidth variant="contained" sx={{ backgroundColor: theme.palette.primary.main, '&:hover': { backgroundColor: theme.palette.primary.dark } }} disabled={loading}>
               {loading ? <CircularProgress size={24} color="inherit" /> : 'SIGN IN'}
             </StyledButton>
             {loading && (
               <Typography variant="body2" color="text.secondary" sx={{ mt: 2, textAlign: 'center' }}>
-                Free server wake-up in progress. Please wait up to a minute.
+                Server wake up in progress, please wait.
               </Typography>
             )}
             <Button variant="text" fullWidth sx={{ mt: 1.5 }} onClick={handleGuestContinue}>
@@ -220,38 +196,13 @@ const Login = () => {
           <Typography variant="body1" sx={{ mb: 4, fontSize: '1rem' }}>
             Join Connect+ by creating an account
           </Typography>
-          <StyledButton variant="outlined" sx={{ color: 'white', borderColor: 'white' }} onClick={() => navigate('/register')}>
+          <StyledButton variant="outlined" sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.8)' }} onClick={() => navigate('/register')}>
             SIGN UP
           </StyledButton>
         </WelcomeSection>
       </StyledContainer>
 
-      <Box
-        component="footer"
-        sx={{
-          py: 3,
-          textAlign: 'center',
-          mt: 4,
-          color: theme.palette.text.secondary,
-          fontSize: '0.9rem',
-        }}
-      >
-        <Typography variant="body2">
-          © 2026 Connect+ All Rights Reserved.
-        </Typography>
-      </Box>
-      <Dialog open={forgotDialogOpen} onClose={() => setForgotDialogOpen(false)} fullWidth maxWidth="xs">
-        <DialogTitle>Password reset</DialogTitle>
-        <DialogContent>
-          <Typography variant="body2" color="text.secondary">
-            Password reset is not available yet on this demo build. Please create a new account or continue as guest.
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setForgotDialogOpen(false)}>Close</Button>
-          <Button variant="contained" onClick={() => navigate('/register')}>Create Account</Button>
-        </DialogActions>
-      </Dialog>
+      <AppFooter mt={2.5} compact maxWidth="sm" />
     </PageBackground>
   );
 };

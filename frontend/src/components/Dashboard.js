@@ -20,7 +20,6 @@ import {
   ToggleButtonGroup,
   Alert,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
@@ -29,28 +28,6 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { getRoadmaps } from '../services/api';
 import Navbar from './Navbar';
 import { getGuestRoadmaps, hasGuestRoadmap } from '../utils/guestRoadmap';
-
-const StatCard = styled(Card)(({ theme }) => ({
-  height: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  textAlign: 'center',
-  padding: theme.spacing(3),
-  background: 'linear-gradient(135deg, #1976d2 0%, #2196f3 100%)',
-  color: 'white',
-}));
-
-const RoadmapCard = styled(Card)(({ theme }) => ({
-  height: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  transition: 'transform 0.2s, box-shadow 0.2s',
-  '&:hover': {
-    transform: 'translateY(-4px)',
-    boxShadow: theme.shadows[8],
-  },
-}));
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -195,19 +172,19 @@ const Dashboard = () => {
     <>
       <Navbar />
       <Container maxWidth="lg" sx={{ py: { xs: 2, sm: 4 } }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: { xs: 'stretch', sm: 'flex-start' }, flexDirection: { xs: 'column', sm: 'row' }, gap: 2, mb: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: { xs: 'stretch', sm: 'flex-start' }, flexDirection: { xs: 'column', sm: 'row' }, gap: 2, mb: 3.5 }}>
           <Box>
-            <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', mb: 1, fontSize: { xs: '1.6rem', sm: '2.125rem' } }}>
+            <Typography variant="h4" component="h1" sx={{ fontWeight: 800, mb: 0.8, fontSize: { xs: '1.55rem', sm: '2rem' }, letterSpacing: '-0.02em' }}>
               Dashboard
             </Typography>
-            <Typography variant="subtitle1" color="text.secondary">
+            <Typography variant="body1" color="text.secondary">
               {isGuest ? 'Guest mode: local roadmap only, saved in this browser' : 'Track your progress and manage your learning journey'}
             </Typography>
           </Box>
           <Button
             variant="contained"
             color="primary"
-            sx={{ borderRadius: 2, px: 3, py: 1, fontWeight: 'bold', fontSize: '1rem', boxShadow: 2, width: { xs: '100%', sm: 'auto' } }}
+            sx={{ borderRadius: 2, px: 3, py: 1, fontWeight: 700, fontSize: '0.98rem', boxShadow: 'none', width: { xs: '100%', sm: 'auto' } }}
             startIcon={<AddIcon />}
             onClick={() => navigate('/create')}
           >
@@ -216,7 +193,7 @@ const Dashboard = () => {
         </Box>
         {isGuest && (
           <Alert severity="warning" icon={false} sx={{ mb: 3, borderRadius: 2 }}>
-            Guest mode supports one roadmap with 2-3 skills and uses frontend-only storage.
+            Guest mode supports one roadmap with 2-3 skills.
           </Alert>
         )}
         <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
@@ -225,10 +202,11 @@ const Dashboard = () => {
             exclusive
             onChange={handleViewChange}
             sx={{
-              background: '#f8f9fb',
+              background: 'transparent',
               borderRadius: 2,
               p: 0.5,
-              boxShadow: 'none',
+              border: '1px solid',
+              borderColor: 'divider',
               width: { xs: '100%', sm: 'auto' },
               '& .MuiToggleButton-root': {
                 flex: { xs: 1, sm: 'unset' },
@@ -242,20 +220,19 @@ const Dashboard = () => {
                 borderRadius: 2,
                 px: 3,
                 py: 1,
-                fontWeight: 'bold',
-                fontSize: { xs: '0.92rem', sm: '1.1rem' },
-                color: '#444',
-                backgroundColor: '#fff',
-                border: '1.5px solid #e3e6f0',
+                fontWeight: 700,
+                fontSize: { xs: '0.9rem', sm: '1rem' },
+                color: 'text.secondary',
+                backgroundColor: 'transparent',
+                border: 'none',
                 transition: 'all 0.2s',
                 '&.Mui-selected': {
                   color: '#fff',
                   backgroundColor: '#1976d2',
-                  border: 'none',
-                  boxShadow: '0 2px 8px 0 rgba(25, 118, 210, 0.08)',
+                  boxShadow: 'none',
                 },
                 '&:hover': {
-                  backgroundColor: '#f5f7fa',
+                  backgroundColor: 'action.hover',
                 },
                 '&.Mui-selected:hover': {
                   backgroundColor: '#1565c0',
@@ -271,20 +248,19 @@ const Dashboard = () => {
                 borderRadius: 2,
                 px: 3,
                 py: 1,
-                fontWeight: 'bold',
-                fontSize: { xs: '0.92rem', sm: '1.1rem' },
-                color: '#444',
-                backgroundColor: '#fff',
-                border: '1.5px solid #e3e6f0',
+                fontWeight: 700,
+                fontSize: { xs: '0.9rem', sm: '1rem' },
+                color: 'text.secondary',
+                backgroundColor: 'transparent',
+                border: 'none',
                 transition: 'all 0.2s',
                 '&.Mui-selected': {
                   color: '#fff',
                   backgroundColor: '#1976d2',
-                  border: 'none',
-                  boxShadow: '0 2px 8px 0 rgba(25, 118, 210, 0.08)',
+                  boxShadow: 'none',
                 },
                 '&:hover': {
-                  backgroundColor: '#f5f7fa',
+                  backgroundColor: 'action.hover',
                 },
                 '&.Mui-selected:hover': {
                   backgroundColor: '#1565c0',
@@ -297,7 +273,7 @@ const Dashboard = () => {
         </Box>
         <Grid container spacing={2} sx={{ mb: 4 }}>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Card sx={{ p: 3, textAlign: 'center', boxShadow: 2, borderRadius: 3, background: '#f0f6ff' }}>
+            <Card sx={{ p: 3, textAlign: 'center', boxShadow: 'none', borderRadius: 3, border: '1px solid', borderColor: 'divider', background: 'background.paper' }}>
               <TimelineIcon sx={{ fontSize: 36, color: '#1976d2', mb: 1 }} />
               <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>
                 {view === 'active' ? activeRoadmaps.length : completedRoadmaps.length}
@@ -306,7 +282,7 @@ const Dashboard = () => {
             </Card>
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Card sx={{ p: 3, textAlign: 'center', boxShadow: 2, borderRadius: 3, background: '#f0f6ff' }}>
+            <Card sx={{ p: 3, textAlign: 'center', boxShadow: 'none', borderRadius: 3, border: '1px solid', borderColor: 'divider', background: 'background.paper' }}>
               <EmojiEventsIcon sx={{ fontSize: 36, color: '#1976d2', mb: 1 }} />
               <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>
                 {Math.round(stats.averageProgress)}%
@@ -315,7 +291,7 @@ const Dashboard = () => {
             </Card>
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Card sx={{ p: 3, textAlign: 'center', boxShadow: 2, borderRadius: 3, background: '#f0f6ff' }}>
+            <Card sx={{ p: 3, textAlign: 'center', boxShadow: 'none', borderRadius: 3, border: '1px solid', borderColor: 'divider', background: 'background.paper' }}>
               <TimelineIcon sx={{ fontSize: 36, color: '#1976d2', mb: 1 }} />
               <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>
                 {stats.completedSkills}
@@ -324,7 +300,7 @@ const Dashboard = () => {
             </Card>
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Card sx={{ p: 3, textAlign: 'center', boxShadow: 2, borderRadius: 3, background: '#f0f6ff' }}>
+            <Card sx={{ p: 3, textAlign: 'center', boxShadow: 'none', borderRadius: 3, border: '1px solid', borderColor: 'divider', background: 'background.paper' }}>
               <SchoolIcon sx={{ fontSize: 36, color: '#1976d2', mb: 1 }} />
               <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>
                 {stats.totalLearningTime}h
@@ -341,7 +317,7 @@ const Dashboard = () => {
               This Week's Learning
             </Typography>
             {thisWeekSkills.length === 0 ? (
-              <Card sx={{ p: 3, textAlign: 'center', borderRadius: 3, boxShadow: 1, background: '#f8f9fb' }}>
+              <Card sx={{ p: 3, textAlign: 'center', borderRadius: 3, boxShadow: 'none', border: '1px solid', borderColor: 'divider', background: 'background.paper' }}>
                 <Typography color="text.secondary">No skills scheduled for this week. Enjoy your free time or add a new roadmap!</Typography>
               </Card>
             ) : (
@@ -352,15 +328,17 @@ const Dashboard = () => {
                       <Card sx={{
                         p: 2,
                         borderRadius: 2,
-                        boxShadow: 1,
+                        boxShadow: 'none',
                         height: '100%',
                         minHeight: 120,
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'space-between',
                         transition: 'box-shadow 0.2s, transform 0.2s',
-                        background: '#fff5f5',
-                        '&:hover': { boxShadow: 6, transform: 'translateY(-2px) scale(1.01)', borderColor: '#90caf9' },
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        background: 'background.paper',
+                        '&:hover': { boxShadow: 'none', transform: 'translateY(-1px)', borderColor: 'primary.light' },
                       }}>
                         <CardContent sx={{ p: 0, '&:last-child': { pb: 0 }, flex: 1 }}>
                           <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
@@ -409,7 +387,7 @@ const Dashboard = () => {
 
         {view === 'active' ? (
           <>
-            <Typography variant="h5" sx={{ mt: 8, mb: 2, fontWeight: 'bold' }}>Active Roadmaps</Typography>
+            <Typography variant="h5" sx={{ mt: 7, mb: 2, fontWeight: 700 }}>Active Roadmaps</Typography>
             {activeRoadmaps.length === 0 ? (
               <Card sx={{ p: 4, textAlign: 'center', mb: 4 }}>
                 <Typography variant="h6" gutterBottom>
@@ -454,17 +432,17 @@ const Dashboard = () => {
                       <Card sx={{
                         p: 3,
                         borderRadius: 4,
-                        boxShadow: 2,
+                        boxShadow: 'none',
                         background: '#fff',
                         display: 'flex',
                         flexDirection: 'column',
                         position: 'relative',
-                        transition: 'transform 0.18s cubic-bezier(.4,2,.6,1), box-shadow 0.18s cubic-bezier(.4,2,.6,1), border-color 0.18s cubic-bezier(.4,2,.6,1)',
-                        border: '1.5px solid #f0f4fa',
+                        transition: 'transform 0.18s ease, border-color 0.18s ease',
+                        border: '1px solid',
+                        borderColor: 'divider',
                         '&:hover': {
-                          transform: 'translateY(-4px)',
-                          boxShadow: 6,
-                          borderColor: '#90caf9',
+                          transform: 'translateY(-1px)',
+                          borderColor: 'primary.light',
                         },
                       }}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
@@ -477,7 +455,7 @@ const Dashboard = () => {
                             <Typography variant="body2" color="text.secondary">Progress</Typography>
                             <Typography variant="body2" color="text.secondary">{progress}%</Typography>
                           </Box>
-                          <LinearProgress variant="determinate" value={progress} sx={{ height: 8, borderRadius: 4, background: '#e3e6f0', '& .MuiLinearProgress-bar': { background: '#448aff' } }} />
+                          <LinearProgress variant="determinate" value={progress} sx={{ height: 8, borderRadius: 4 }} />
                         </Box>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                           <Box>
@@ -492,7 +470,7 @@ const Dashboard = () => {
                         <Button
                           variant="outlined"
                           endIcon={<ArrowForwardIcon />}
-                          sx={{ mt: 'auto', fontWeight: 600, color: '#1976d2', borderColor: '#90caf9', borderRadius: 2, py: 0.75, fontSize: '1rem', '&:hover': { background: '#e3f2fd', borderColor: '#1976d2' } }}
+                          sx={{ mt: 'auto', fontWeight: 600, borderRadius: 2, py: 0.75, fontSize: '0.96rem' }}
                           onClick={() => navigate(`/roadmap/${roadmap.id}`)}
                         >
                           Continue Learning
@@ -506,7 +484,7 @@ const Dashboard = () => {
           </>
         ) : (
           <>
-            <Typography variant="h5" sx={{ mt: 8, mb: 2, fontWeight: 'bold' }}>Completed Roadmaps</Typography>
+            <Typography variant="h5" sx={{ mt: 7, mb: 2, fontWeight: 700 }}>Completed Roadmaps</Typography>
             {completedRoadmaps.length === 0 ? (
               <Card sx={{ p: 4, textAlign: 'center', mb: 4 }}>
                 <Typography variant="h6" gutterBottom>
@@ -542,17 +520,17 @@ const Dashboard = () => {
                       <Card sx={{
                         p: 3,
                         borderRadius: 4,
-                        boxShadow: 2,
+                        boxShadow: 'none',
                         background: '#fff',
                         display: 'flex',
                         flexDirection: 'column',
                         position: 'relative',
-                        transition: 'transform 0.18s cubic-bezier(.4,2,.6,1), box-shadow 0.18s cubic-bezier(.4,2,.6,1), border-color 0.18s cubic-bezier(.4,2,.6,1)',
-                        border: '1.5px solid #f0f4fa',
+                        transition: 'transform 0.18s ease, border-color 0.18s ease',
+                        border: '1px solid',
+                        borderColor: 'divider',
                         '&:hover': {
-                          transform: 'translateY(-4px)',
-                          boxShadow: 6,
-                          borderColor: '#90caf9',
+                          transform: 'translateY(-1px)',
+                          borderColor: 'primary.light',
                         },
                       }}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
@@ -565,7 +543,7 @@ const Dashboard = () => {
                             <Typography variant="body2" color="text.secondary">Progress</Typography>
                             <Typography variant="body2" color="text.secondary">{progress}%</Typography>
                           </Box>
-                          <LinearProgress variant="determinate" value={progress} sx={{ height: 8, borderRadius: 4, background: '#e3e6f0', '& .MuiLinearProgress-bar': { background: '#448aff' } }} />
+                          <LinearProgress variant="determinate" value={progress} sx={{ height: 8, borderRadius: 4 }} />
                         </Box>
                         <Box sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', mb: 2 }}>
                           <Box>
@@ -576,7 +554,7 @@ const Dashboard = () => {
                         <Button
                           variant="outlined"
                           endIcon={<ArrowForwardIcon />}
-                          sx={{ mt: 'auto', fontWeight: 600, color: '#1976d2', borderColor: '#90caf9', borderRadius: 2, py: 0.75, fontSize: '1rem', '&:hover': { background: '#e3f2fd', borderColor: '#1976d2' } }}
+                          sx={{ mt: 'auto', fontWeight: 600, borderRadius: 2, py: 0.75, fontSize: '0.96rem' }}
                           onClick={() => navigate(`/roadmap/${roadmap.id}`)}
                         >
                           View

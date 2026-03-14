@@ -7,19 +7,17 @@ import TimelineIcon from '@mui/icons-material/Timeline';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import SchoolIcon from '@mui/icons-material/School';
 
-// Dashboard-style card
 const ProfileCard = styled(Card)(({ theme }) => ({
   padding: theme.spacing(4),
   borderRadius: 16,
-  boxShadow: '0 2px 12px 0 rgba(80,120,200,0.08)',
-  background: '#f0f6ff',
-  maxWidth: 480,
+  boxShadow: 'none',
+  border: '1px solid',
+  borderColor: theme.palette.divider,
+  background: '#fff',
+  maxWidth: 760,
   margin: '0 auto',
-  transition: 'box-shadow 0.2s, transform 0.2s',
-  '&:hover': {
-    boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.10)',
-    transform: 'translateY(-2px) scale(1.01)',
-  },
+  transition: 'border-color 0.2s ease',
+  '&:hover': { borderColor: theme.palette.primary.light },
 }));
 
 const Profile = () => {
@@ -97,19 +95,19 @@ const Profile = () => {
       <Container maxWidth="lg" sx={{ py: 6, minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Fade in timeout={600}>
           <ProfileCard>
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2 }}>
-              <Box sx={{ position: 'relative', mb: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
+              <Box sx={{ position: 'relative', mb: 2.5 }}>
                 <Avatar
                   src={avatarUrl || undefined}
                   alt={user.username}
-                  sx={{ width: 96, height: 96, boxShadow: 2, border: '3px solid #fff', background: '#e3e6f0', fontSize: 40 }}
+                  sx={{ width: 92, height: 92, border: '2px solid', borderColor: 'divider', background: 'grey.100', fontSize: 36, color: 'text.primary' }}
                 >
                   {(!avatarUrl && user.username) ? user.username[0] : ''}
                 </Avatar>
                 <Button
-                  variant="contained"
+                  variant="outlined"
                   size="small"
-                  sx={{ position: 'absolute', bottom: -10, left: '50%', transform: 'translateX(-50%)', fontWeight: 600, borderRadius: 2, minWidth: 0, px: 2, py: 0.5, fontSize: '0.95rem' }}
+                  sx={{ position: 'absolute', bottom: -10, left: '50%', transform: 'translateX(-50%)', fontWeight: 600, borderRadius: 2, minWidth: 0, px: 1.75, py: 0.4, fontSize: '0.82rem' }}
                   component="label"
                   disabled={uploading}
                 >
@@ -123,7 +121,7 @@ const Profile = () => {
                   />
                 </Button>
               </Box>
-              <Typography variant="h4" sx={{ fontWeight: 800, mb: 1, letterSpacing: '-1px' }}>Profile</Typography>
+              <Typography variant="h4" sx={{ fontWeight: 800, mb: 0.5, letterSpacing: '-0.03em' }}>Profile</Typography>
             </Box>
             <Grid container spacing={2}>
               <Grid size={{ xs: 12, sm: 6 }}>
@@ -135,24 +133,23 @@ const Profile = () => {
                 <Typography variant="body1" sx={{ fontWeight: 600 }}>{user.email}</Typography>
               </Grid>
             </Grid>
-            {/* Dashboard Stat Cards */}
-            <Grid container spacing={2} sx={{ mt: 4 }}>
+            <Grid container spacing={2} sx={{ mt: 3 }}>
               <Grid size={{ xs: 12, sm: 4 }}>
-                <Card sx={{ p: 3, textAlign: 'center', boxShadow: 2, borderRadius: 3, background: '#f0f6ff' }}>
+                <Card sx={{ p: 2.5, textAlign: 'center', boxShadow: 'none', borderRadius: 3, border: '1px solid', borderColor: 'divider', background: 'background.paper' }}>
                   <EmojiEventsIcon sx={{ fontSize: 36, color: '#1976d2', mb: 1 }} />
                   <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>{stats.completedRoadmaps}</Typography>
                   <Typography variant="body2" color="text.secondary">Completed Roadmaps</Typography>
                 </Card>
               </Grid>
               <Grid size={{ xs: 12, sm: 4 }}>
-                <Card sx={{ p: 3, textAlign: 'center', boxShadow: 2, borderRadius: 3, background: '#f0f6ff' }}>
+                <Card sx={{ p: 2.5, textAlign: 'center', boxShadow: 'none', borderRadius: 3, border: '1px solid', borderColor: 'divider', background: 'background.paper' }}>
                   <TimelineIcon sx={{ fontSize: 36, color: '#1976d2', mb: 1 }} />
                   <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>{stats.completedSkills}</Typography>
                   <Typography variant="body2" color="text.secondary">Skills Mastered</Typography>
                 </Card>
               </Grid>
               <Grid size={{ xs: 12, sm: 4 }}>
-                <Card sx={{ p: 3, textAlign: 'center', boxShadow: 2, borderRadius: 3, background: '#f0f6ff' }}>
+                <Card sx={{ p: 2.5, textAlign: 'center', boxShadow: 'none', borderRadius: 3, border: '1px solid', borderColor: 'divider', background: 'background.paper' }}>
                   <SchoolIcon sx={{ fontSize: 36, color: '#1976d2', mb: 1 }} />
                   <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>{stats.totalLearningTime}h</Typography>
                   <Typography variant="body2" color="text.secondary">Learning Time</Typography>

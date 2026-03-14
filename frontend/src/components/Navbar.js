@@ -87,7 +87,6 @@ const Navbar = () => {
           onClose={handleCloseMenu}
         >
           {mode !== 'guest' && <MenuItem onClick={() => { navigate('/profile'); handleCloseMenu(); }}>Profile</MenuItem>}
-          <MenuItem onClick={() => { navigate('/settings'); handleCloseMenu(); }}>Settings</MenuItem>
           <MenuItem onClick={handleLogout}>{mode === 'guest' ? 'Exit Guest Mode' : 'Logout'}</MenuItem>
         </Menu>
       </Toolbar>

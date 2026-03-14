@@ -607,13 +607,14 @@ const RoadmapView = () => {
                 mb: 5,
                 p: 0,
                 borderRadius: 4,
-                background: '#f8fafd',
-                border: '1.5px solid #e3e8ee',
-                boxShadow: '0 2px 12px rgba(80,120,200,0.04)',
-                transition: 'box-shadow 0.2s, transform 0.2s',
+                background: '#fff',
+                border: '1px solid',
+                borderColor: 'divider',
+                boxShadow: 'none',
+                transition: 'border-color 0.2s ease, transform 0.2s ease',
                 '&:hover': {
-                  boxShadow: '0 6px 24px rgba(80,120,200,0.10)',
-                  transform: 'translateY(-2px) scale(1.01)',
+                  transform: 'translateY(-1px)',
+                  borderColor: 'primary.light',
                 },
               }}>
                 <Box sx={{
@@ -628,7 +629,8 @@ const RoadmapView = () => {
                   borderTopLeftRadius: 4,
                   borderTopRightRadius: 4,
                   background: isOverdue ? 'rgba(255,0,0,0.04)' : 'transparent',
-                  borderBottom: '1px solid #e3e8ee',
+                  borderBottom: '1px solid',
+                  borderColor: 'divider',
                 }}>
                   <Typography variant="h5" sx={{ mr: 2, color: isOverdue ? 'error.main' : 'primary.main', fontWeight: 800, letterSpacing: '-1px', fontSize: { xs: '1.2rem', sm: '1.5rem' } }}>
                     Week {idx + 1}
@@ -660,7 +662,7 @@ const RoadmapView = () => {
                     key={weekProgress}
                     variant="determinate"
                     value={weekProgress}
-                    sx={{ height: 7, borderRadius: 4, background: '#e3e8ee', mb: 1, transition: 'all 0.7s cubic-bezier(.4,2,.6,1)' }}
+                    sx={{ height: 7, borderRadius: 4, mb: 1, transition: 'all 0.4s ease' }}
                   />
                   <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
                     {Math.round(weekProgress)}% complete this week
@@ -678,15 +680,15 @@ const RoadmapView = () => {
                           sx={{
                             mb: 3,
                             p: { xs: 2, sm: 3 },
-                            border: '1.5px solid #e3e8ee',
+                            border: '1px solid',
+                            borderColor: 'divider',
                             borderRadius: 4,
-                            boxShadow: '0 2px 12px rgba(80,120,200,0.07)',
+                            boxShadow: 'none',
                             background: '#fff',
-                            transition: 'box-shadow 0.2s, transform 0.2s',
+                            transition: 'border-color 0.2s ease, transform 0.2s ease',
                             '&:hover': {
-                              boxShadow: 8,
-                              transform: 'translateY(-3px) scale(1.015)',
-                              borderColor: '#90caf9',
+                              transform: 'translateY(-1px)',
+                              borderColor: 'primary.light',
                             },
                           }}
                         >
@@ -708,7 +710,7 @@ const RoadmapView = () => {
                                 sx={{ p: 0, '& .MuiSvgIcon-root': { fontSize: 28 } }}
                               />
                             </Box>
-                            <Typography variant="h6" sx={{ fontWeight: 800, fontSize: '1.18rem', mb: 0, color: '#222', letterSpacing: '-0.5px' }}>
+                            <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1.05rem', mb: 0, color: 'text.primary' }}>
                               {step.skill.name}
                               {globalCompletedSkillIds.has(step.skill.id) && (
                                 <Chip label="Completed in another roadmap" color="warning" size="small" sx={{ ml: 2, fontWeight: 400 }} />
@@ -720,20 +722,20 @@ const RoadmapView = () => {
                               )}
                             </Typography>
                           </Box>
-                          <Typography variant="body2" color="text.secondary" sx={{ ml: { xs: 0, sm: 5 }, mb: 2, fontSize: '1.05rem', fontWeight: 400, lineHeight: 1.7, letterSpacing: 0.1 }}>
+                          <Typography variant="body2" color="text.secondary" sx={{ ml: { xs: 0, sm: 5 }, mb: 2, lineHeight: 1.65 }}>
                             {step.skill.description}
                           </Typography>
                           <Box sx={{ display: 'flex', gap: 2, ml: { xs: 0, sm: 5 }, flexWrap: 'wrap', mb: 1 }}>
                             <Chip
-                              icon={<AccessTime sx={{ fontSize: 18, color: '#90caf9' }} />}
+                              icon={<AccessTime sx={{ fontSize: 18 }} />}
                               label={`${step.allocated_hours || step.skill.estimated_time} hours`}
                               size="small"
-                              sx={{ fontWeight: 500, fontSize: '0.98rem', background: '#f0f6ff', color: '#1976d2', px: 1.5, borderRadius: 2, boxShadow: 'none' }}
+                              sx={{ fontWeight: 500, fontSize: '0.92rem', background: 'action.hover', color: 'primary.main', px: 1.5, borderRadius: 2 }}
                             />
                             <Chip
                               label={getLevelLabel(step.skill.difficulty_level || step.skill.level || 'N/A')}
                               size="small"
-                              sx={{ fontWeight: 500, fontSize: '0.98rem', background: '#f5f6fa', color: '#555', textTransform: 'capitalize', px: 1.5, borderRadius: 2, boxShadow: 'none' }}
+                              sx={{ fontWeight: 500, fontSize: '0.92rem', background: 'grey.100', color: 'text.secondary', textTransform: 'capitalize', px: 1.5, borderRadius: 2 }}
                             />
                           </Box>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, ml: { xs: 0, sm: 5 }, mb: 2, flexWrap: 'wrap' }}>
@@ -826,7 +828,7 @@ const RoadmapView = () => {
                               </FormControl>
                             </Box>
                             <Collapse in={isExpanded} timeout={350} unmountOnExit>
-                              <Box sx={{ background: '#f6fafd', borderRadius: 2, p: 2, mt: 1 }}>
+                              <Box sx={{ background: 'background.default', borderRadius: 2, p: 2, mt: 1 }}>
                                 {Object.entries(groupResourcesByType(step.skill.learning_resources))
                                   .filter(([type]) => (selectedResourceType[step.id] || 'all') === 'all' || type === selectedResourceType[step.id])
                                   .map(([type, resources]) => (
@@ -847,12 +849,14 @@ const RoadmapView = () => {
                                           <Grid size={{ xs: 12, md: 6 }} key={resource.id}>
                                             <ResourceCard sx={{
                                               borderRadius: 3,
-                                              boxShadow: '0 2px 10px rgba(80,120,200,0.07)',
-                                              transition: 'box-shadow 0.2s, transform 0.2s',
+                                              boxShadow: 'none',
+                                              border: '1px solid',
+                                              borderColor: 'divider',
+                                              transition: 'border-color 0.2s ease, transform 0.2s ease',
                                               mb: 2,
                                               '&:hover': {
-                                                boxShadow: '0 8px 24px rgba(80,120,200,0.13)',
-                                                transform: 'translateY(-2px) scale(1.01)',
+                                                borderColor: 'primary.light',
+                                                transform: 'translateY(-1px)',
                                               },
                                             }}>
                                               <CardContent sx={{ pb: '16px !important' }}>

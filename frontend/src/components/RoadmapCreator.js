@@ -66,10 +66,12 @@ const StyledPage = styled(Box)(({ theme }) => ({
 }));
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
-  borderRadius: 20,
-  boxShadow: theme.shadows[4],
+  borderRadius: 16,
+  boxShadow: 'none',
+  border: '1px solid',
+  borderColor: theme.palette.divider,
   background: '#fff',
-  padding: theme.spacing(6, 4),
+  padding: theme.spacing(5, 3.5),
   maxWidth: 1000,
   width: '90%',
   margin: 'auto',
@@ -78,24 +80,23 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   [theme.breakpoints.down('sm')]: {
     width: '100%',
     padding: theme.spacing(3, 2),
-    borderRadius: 14,
+    borderRadius: 12,
   },
 }));
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
   marginBottom: theme.spacing(3),
   '& .MuiOutlinedInput-root': {
-    borderRadius: 12,
-    backgroundColor: '#f8f9fb',
-    '& fieldset': { border: 'none' },
+    borderRadius: 10,
+    backgroundColor: '#fff',
   },
 }));
 
 const StyledButton = styled(Button)(({ theme }) => ({
   fontWeight: 600,
-  fontSize: '1rem',
+  fontSize: '0.95rem',
   borderRadius: 10,
-  padding: theme.spacing(1.2, 4),
+  padding: theme.spacing(1.15, 3),
   textTransform: 'none',
   boxShadow: 'none',
 }));
@@ -388,7 +389,7 @@ const RoadmapCreator = () => {
           </Typography>
           {isGuest && (
             <Alert severity="info" sx={{ mb: 3 }}>
-              Guest mode uses frontend-only data and supports one roadmap with 2-3 skills.
+              Guest mode supports one roadmap with 2-3 skills.
             </Alert>
           )}
           {isGuest && existingGuestRoadmap && (
@@ -417,19 +418,19 @@ const RoadmapCreator = () => {
               You already have a guest roadmap.
             </Alert>
           )}
-          <Stepper activeStep={activeStep} sx={{ mb: 5, background: 'transparent' }} alternativeLabel={!isMobile}>
+          <Stepper activeStep={activeStep} sx={{ mb: 4, background: 'transparent' }} alternativeLabel={!isMobile}>
             {steps.map((label, idx) => (
               <Step key={label}>
                 <StepLabel
                   sx={{
                     '& .MuiStepLabel-label': {
                       fontWeight: 600,
-                      fontSize: isMobile ? '0.85rem' : '1.1rem',
+                      fontSize: isMobile ? '0.82rem' : '1rem',
                       color: activeStep === idx ? 'primary.main' : '#888',
                     },
                     '& .MuiStepIcon-root': {
                       color: activeStep === idx ? 'primary.main' : '#cfd8dc',
-                      fontSize: 32,
+                      fontSize: 30,
                     },
                   }}
                 >
@@ -443,7 +444,7 @@ const RoadmapCreator = () => {
           )}
           <form onSubmit={activeStep === steps.length - 1 ? handleSubmit : (e) => { e.preventDefault(); handleNext(); }}>
             {getStepContent(activeStep)}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 5, gap: 1.5 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4, gap: 1.5 }}>
               <StyledButton
                 disabled={activeStep === 0}
                 onClick={handleBack}
