@@ -31,7 +31,12 @@ def _get_list_env(name: str, default: list[str]) -> list[str]:
     value = os.environ.get(name)
     if not value:
         return default
-    return [item.strip() for item in value.split(",") if item.strip()]
+    cleaned_values = []
+    for item in value.split(","):
+        normalized = item.strip().strip('"').strip("'")
+        if normalized:
+            cleaned_values.append(normalized)
+    return cleaned_values or default
 
 
 # SECURITY WARNING: keep secret key outside code in production.
@@ -40,10 +45,8 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "dev-only-insecure-secret-key")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = _get_bool_env("DEBUG", default=False)
 
-ALLOWED_HOSTS = _get_list_env(
-    "ALLOWED_HOSTS",
-    ['.onrender.com', 'localhost', '127.0.0.1']
-)
+DEFAULT_ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = sorted(set(DEFAULT_ALLOWED_HOSTS + _get_list_env("ALLOWED_HOSTS", [])))
 
 
 # Application definition
@@ -146,14 +149,27 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CORS settings
+# CORS / CSRF settings
 CORS_ALLOW_ALL_ORIGINS = _get_bool_env("CORS_ALLOW_ALL_ORIGINS", default=False)
-CORS_ALLOWED_ORIGINS = _get_list_env(
-    "CORS_ALLOWED_ORIGINS",
-    [
-        "http://localhost:3000",
-        "https://khandelwaly940.github.io",
-    ],
+
+DEFAULT_CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "https://khandelwaly940.github.io",
+    "https://yashkhandelwal.me",
+    "https://www.yashkhandelwal.me",
+]
+CORS_ALLOWED_ORIGINS = sorted(
+    set(DEFAULT_CORS_ALLOWED_ORIGINS + _get_list_env("CORS_ALLOWED_ORIGINS", []))
+)
+
+DEFAULT_CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "https://khandelwaly940.github.io",
+    "https://yashkhandelwal.me",
+    "https://www.yashkhandelwal.me",
+]
+CSRF_TRUSTED_ORIGINS = sorted(
+    set(DEFAULT_CSRF_TRUSTED_ORIGINS + _get_list_env("CSRF_TRUSTED_ORIGINS", []))
 )
 
 # REST Framework settings
