@@ -395,7 +395,7 @@ const LandingPage = () => {
               Login
             </HeaderGhostButton>
             <ActionButton variant="contained" color="primary" size="small" sx={{ ml: 1.5 }} onClick={openStartDialog}>
-              Get Started
+              Get Started/Guest
             </ActionButton>
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', gap: 1 }}>
@@ -403,7 +403,7 @@ const LandingPage = () => {
               Login
             </HeaderGhostButton>
             <ActionButton variant="contained" color="primary" size="small" onClick={openStartDialog}>
-              Get Started
+              Get Started/Guest
             </ActionButton>
             <IconButton onClick={() => setMobileNavOpen(true)} aria-label="open menu">
               <MenuIcon />
